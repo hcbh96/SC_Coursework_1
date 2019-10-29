@@ -21,20 +21,30 @@ def dXdt(X, t=0):
                   b*X[1]*(1-(X[1]/X[0]))])
 
 # initial pred and prey populations
-X0=np.array([5,2])
-t = np.linspace(0,100,100)
+X0=np.array([0.6,0.3])
+t = np.linspace(0,1000,100)
 
-# solve the ode using odeint
-X, infodict = odeint(dXdt, X0, t, full_output=True)
+def solve_int(info=False):
+    # solve the ode using odeint as odeint suffices and is easy to use
+    X, infodict = odeint(dXdt, X0, t, full_output=True)
+    if (info):
+        print(infodict['message'])
+    return X
 
-#plot popultions
-prey, pred = X.T
-f1 = plt.figure()
-plt.plot(t, prey, 'r-', label='Prey')
-plt.plot(t, pred  , 'b-', label='Pred')
-plt.grid()
-plt.legend(loc='best')
-plt.xlabel('time')
-plt.ylabel('population')
-plt.title('Evolution of predator and prey populations')
-f1.savefig('predator_and_prey_1.png')
+def plot_pred_pray(X):
+    #plot popultions
+    prey, pred = X.T
+    f1 = plt.figure()
+    plt.plot(t, prey, 'r-', label='Prey')
+    plt.plot(t, pred  , 'b-', label='Pred')
+    plt.grid()
+    plt.legend(loc='best')
+    plt.xlabel('time')
+    plt.ylabel('population')
+    plt.title('Evolution of predator and prey populations')
+    f1.savefig('predator_and_prey_1.png')
+    return
+
+X=solve_int()
+plot_pred_pray(X)
+
