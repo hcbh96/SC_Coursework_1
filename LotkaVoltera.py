@@ -1,44 +1,40 @@
 import matplotlib.pyplot as plt
+from scipy.integrate import odeint
+import numpy as np
 
-def dxdt(x,y,a,d):
-     """dxdt is the change in prey population size (x is the number of prey)"""
-     return x*(1-x)-(a*x*y)/(d+x)
+"""
+We are using X=[u,v] to describe both poulations
 
-#define class and set a and d in class dx dy can then be methods
-def dydt(x,y,a,d,b):
-     """dydt is the change in predator population size (y is the num of predators)"""
-     return b*y*(1-y/x)
+- u is the prey pop
+- v is the pred pop
+"""
 
+#define params
 a=1
 d=0.1
 b=float(input("Enter the rate of predation b ∈ [0.1, 0.5] : "))
 
-x=60
-y=60
-t=1/1000
-periods=20
+# rate of change and pred and prey populations
+def dXdt(X, t=0):
+     """Return the change in pred and prey populations"""
+     return np.array([X[0]*(1-X[0])-((a*X[0]*X[1])/(d+X[0])),
+                  b*X[1]*(1-(X[1]/X[0]))])
 
-#use these to plot the population changes over time
-y_pop=[]
-x_pop=[]
+# initial pred and prey populations
+X0=np.array([5,2])
+t = np.linspace(0,100,100)
 
+# solve the ode using odeint
+X, infodict = odeint(dXdt, X0, t, full_output=True)
 
-for i in range(1, periods+1):
-    x=int(x+t*dxdt(x,y,a,d))
-    y=int(y+t*dydt(x,y,a,d,b))
-    x_pop.append(x)
-    y_pop.append(y)
-
-    #if ((t*i)%1 == 0):
-    print("Population X:",int(x),"Population y:",int(y), "at period", i)
-
-def plot_curve(x_pop, y_pop):
-    fig=plt.figure()
-    ax=fig.add_subplot(111)
-    ax.plot(x_pop, color='b')
-    ax.plot(y_pop, color='r')
-
-    plt.show()
-
-plot_curve(x_pop, y_pop)
-
+#plot popultions
+prey, pred = X.T
+f1 = plt.figure()
+plt.plot(t, prey, 'r-', label='Prey')
+plt.plot(t, pred  , 'b-', label='Pred')
+plt.grid()
+plt.legend(loc='best')
+plt.xlabel('time')
+plt.ylabel('population')
+plt.title('Evolution of predator and prey populations')
+f1.savefig('predator_and_prey_1.png')
