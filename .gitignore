@@ -1,0 +1,7 @@
+#ignore all png images
+*.png
+
+#ignore all tex files
+*.tex
+
+
