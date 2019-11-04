@@ -21,7 +21,7 @@ def dXdt(X, t=0):
                   b*X[1]*(1-(X[1]/X[0]))])
 
 # initial pred and prey populations
-X0=np.array([0.6,0.3])
+X0=np.array([0.38,0.38])
 t = np.linspace(0,80,10000) #set linspace to 0,24 as limit cycle happens at ~ 21s
 
 def solve_int(info=False):
@@ -43,8 +43,8 @@ def plot_pred_pray(X):
     plt.xticks(np.arange(0,80,1))#plot ticks every second to help with approx time interval
     plt.ylabel('population')
     plt.title('Evolution of predator and prey populations')
-    f1.savefig('predator_and_prey_1.png')
-    #plt.show()
+    #f1.savefig('predator_and_prey_1.png')
+    plt.show()
     return
 
 X=solve_int()
@@ -58,7 +58,4 @@ An appropriate phase condition for the limit cycle is that the dy/dt and dx/dt m
 The time period for each phase is approx 20.76.
 
 I will now attempt to construct a shooting method root finding problem"""
-
-
-
 
