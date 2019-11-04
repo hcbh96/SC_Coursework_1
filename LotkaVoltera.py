@@ -44,6 +44,7 @@ def plot_pred_pray(X):
     plt.ylabel('population')
     plt.title('Evolution of predator and prey populations')
     f1.savefig('predator_and_prey_1.png')
+    #plt.show()
     return
 
 X=solve_int()
@@ -54,5 +55,10 @@ plot_pred_pray(X)
 
 An appropriate phase condition for the limit cycle is that the dy/dt and dx/dt must pass through 0 this works as both curves oscilate and so have gradient of 0 twice during an oscilation cycle at their peaks and troughs.
 
+The time period for each phase is approx 20.76.
 
 I will now attempt to construct a shooting method root finding problem"""
+
+
+
+
