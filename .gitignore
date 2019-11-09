@@ -4,4 +4,5 @@
 #ignore all tex files
 *.tex
 
-
+#pycache
+__pycache__/
