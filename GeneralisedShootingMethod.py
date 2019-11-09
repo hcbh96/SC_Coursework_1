@@ -22,11 +22,7 @@ def solve(dXdt, X0, t, boundary_vars, tol=1e-4, maxiter=50):
     ----------
     Returns : an ndarray containing the corrected initial values for the limit cycle.
 """
-    #TODO add in comment about what happens in the numerical root finder fails
-    #TODO ask Dr Barton what sort of additional options would be worth including
     #TODO what exactly is meant by the phase condition why might dcxdt dt be better than an x value
 
     # use the newton method to solve for the initial conditions
     return newton(_func_to_solve,X0,args=(dXdt,t,boundary_vars),tol=tol, maxiter=maxiter)
-
-
