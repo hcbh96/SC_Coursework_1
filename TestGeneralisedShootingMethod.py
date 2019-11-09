@@ -175,5 +175,33 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         self.assertTrue(throws)
 
 
+    def test_shooting_method_with_no_convergence(self):
+        """This function ensures that in the case that the shooting method does not converge an error is returned describing the issue"""
+        #define params
+        a=1; d=0.1; b=0.3
+
+        # rate of change and pred and prey populations
+        def dXdt(X,t=0):
+            """Return the change in pred and prey populations"""
+            return 0
+
+        #define an initial guess for the starting conditions
+        X0=2
+
+        #expected starting params at boundary
+        boundary_vars=0
+
+        #time range
+        t=np.linspace(0,10,100)
+        #calc the result using a secant method
+        throws = False
+        try:
+            res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars, maxiter=1)
+        except RuntimeError:
+            throws = True
+
+        self.assertTrue(throws)
+
+
 if __name__ == '__main__':
     unittest.main()
