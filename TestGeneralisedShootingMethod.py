@@ -103,9 +103,42 @@ def test_on_hopf_bifurcation():
     assert np.isclose(res, expected, atol=1e-01).all() == True, "should be equal to true"
     return "test_on_hopf_bifurcation"
 
+def test_on_system_of_three():
+     """
+     When Testing out generalised shooting method for a system of equations containing three first order ODEs I decided it was in the interest of the reader to use the most basic example possible, to allow the system to be envisaged by the reader...the specific point of this test is to ensure that my shooting method works on systems of first order linear ODEs of greater than 2 dimensions, this test focuses solely on doing that in the most simple way possible
+
+     N.B I have made the above note to show Dr Barton why I have decided not to use the second system of ODEs supplied in the question paper.
+     """
+     sigma=-1;beta=1
+     def dXdt(X, t=0):
+         """Function to calculate the rate of change of the Hopf Bifurcation  at position X"""
+         return np.array([
+                 X[0],
+                 X[1],
+                 X[2]
+                 ])
+
+     # make an initial condition guess
+     X0=[1,0,0.5]
+
+     # set the boundary conditions
+     boundary_vars=[1,1,1]
+
+     # define a time range
+     t=np.linspace(0,10,100)
+
+     #find the solution of the generalised shooting method
+     res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+     expected = [0 , 0, 0 ]
+     assert np.isclose(res, expected, atol=1e-01).all() == True, "should be   equal to true"
+     return "test_on_system_of_three"
+
+
+
 print("Starting Tests on Generalised Shooting Method...")
 print("%s passed" % test_on_constant_derivative_negative())
 print("%s passed" % test_on_constant_derivative_positive())
 print("%s passed" % test_on_lotka_volterra())
 print("%s passed" % test_on_hopf_bifurcation())
+print("%s passed" % test_on_system_of_three())
 print("All tests have passed on Generalised Shooting Method")
