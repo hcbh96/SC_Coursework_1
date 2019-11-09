@@ -133,6 +133,19 @@ def test_on_system_of_three():
      assert np.isclose(res, expected, atol=1e-01).all() == True, "should be   equal to true"
      return "test_on_system_of_three"
 
+def test_unmatched_input_dimensions_1():
+    """This was written before code i.e via TDD"""
+    #arrange
+    def dXdt(X, t=0):
+        return np.array([0,0])
+    X0=[0,0,0] # this variable has too many inputs
+    boundary_vars=[0,0]
+    t=np.linspace(0,10,100)
+    #act
+    res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+    #assert
+    expect="Input array sizes do not match"
+    assert res == expect, "should ensure the array input sizes match"
 
 
 print("Starting Tests on Generalised Shooting Method...")
@@ -141,4 +154,5 @@ print("%s passed" % test_on_constant_derivative_positive())
 print("%s passed" % test_on_lotka_volterra())
 print("%s passed" % test_on_hopf_bifurcation())
 print("%s passed" % test_on_system_of_three())
+print("%s passed" % test_unmatched_input_dimensions_1())
 print("All tests have passed on Generalised Shooting Method")
