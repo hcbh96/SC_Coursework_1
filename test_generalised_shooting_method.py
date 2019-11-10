@@ -5,7 +5,7 @@ Test Generalised shooting method contains test aimed at ensuring the Generalised
 from scipy.optimize import fsolve
 from scipy.integrate import solve_ivp
 
-import GeneralisedShootingMethod
+from generalised_shooting_method import shooting
 import numpy as np
 import unittest
 
@@ -26,7 +26,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         t=np.linspace(0,1,10)
 
         #calc the result using a secant method
-        res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+        res=shooting(dXdt, X0, t, boundary_vars)
 
         self.assertFalse(np.isclose(res, 0.38, atol=1e-01).all())
 
@@ -47,7 +47,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         t=np.linspace(0,1,10)
 
         #calc the result using a secant method
-        res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+        res=shooting(dXdt, X0, t, boundary_vars)
 
         self.assertTrue(np.isclose(res, [0,0], atol=1e-06).all())
 
@@ -77,7 +77,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
          t=np.linspace(0,20.76,10000)
 
          #calc the result using a secant method
-         res=GeneralisedShootingMethod.solve(dXdt_lotka_volterra, X0, t, boundary_vars)
+         res=shooting(dXdt_lotka_volterra, X0, t, boundary_vars)
          self.assertTrue(np.isclose(res, 0.38, atol=1e-02).all())
 
 
@@ -103,7 +103,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         t=np.linspace(0,360,100)
 
         #find the solution of the generalised shooting method
-        res=GeneralisedShootingMethod.solve(dXdt_hopf_bif, X0, t, boundary_vars)
+        res=shooting(dXdt_hopf_bif, X0, t, boundary_vars)
         expected = [ 0.51, -0.15 ]
         self.assertTrue(np.isclose(res, expected, atol=1e-02).all())
 
@@ -135,7 +135,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
          t=np.linspace(0,10,100)
 
          #find the solution of the generalised shooting method
-         res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+         res=shooting(dXdt, X0, t, boundary_vars)
          expected = [0 , 0, 0 ]
          self.assertTrue(np.isclose(res, expected, atol=1e-01).all())
 
@@ -151,7 +151,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         #act
         throws = False
         try:
-            res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+            res=shooting(dXdt, X0, t, boundary_vars)
         except RuntimeError:
             throws = True
         #assert
@@ -169,7 +169,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         throws = False
         #act
         try:
-            res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars)
+            res=shooting(dXdt, X0, t, boundary_vars)
         except ValueError:
             throws = True
         #assert
@@ -197,7 +197,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         #calc the result using a secant method
         throws = False
         try:
-            res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars, maxiter=1)
+            res=shooting(dXdt, X0, t, boundary_vars, maxiter=1)
         except RuntimeError:
             throws = True
 
@@ -222,7 +222,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         t=np.linspace(0,10,100)
 
         #find the solution of the generalised shooting method
-        res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars, root_finder=fsolve)
+        res=shooting(dXdt, X0, t, boundary_vars, root_finder=fsolve)
         expected = [0 , 0, 0 ]
         self.assertTrue(np.isclose(res, expected, atol=1e-01).all())
 
@@ -252,15 +252,14 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
          throws=False
          #calc the result using a secant method
          try:
-             res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars, root_finder=random_root_finder)
-         except ValueError:
+             res=shooting(dXdt, X0, t, boundary_vars, root_finder=random_root_finder)
+         except AttributeError:
              throws=True
 
          self.assertTrue(throws)
 
     #test to see if it works when odeint is passed to the function
     def test_should_solve_solve_ivp(self):
-         print('Ran func')
          # rate of change set to conistant
          def dXdt(X, t=0):
              return [1,1]
@@ -275,7 +274,7 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
          t=(1,10)
 
          #calc the result using a secant method
-         res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars, integrator=solve_ivp)
+         res=shooting(dXdt, X0, t, boundary_vars, integrator=solve_ivp)
 
          self.assertFalse(np.isclose(res, [0.3], atol=1e-01).all())
 
@@ -287,8 +286,8 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         # rate of change set to conistant
         def dXdt(X, t=0):
           return 1
-        def random_integrator():
-          return ""
+        def random_integrator(X):
+          return X*2+1
 
         #define an initial guess
         X0=1
@@ -302,8 +301,8 @@ class TestGeneralisedShootingMethod(unittest.TestCase):
         throws=False
         #calc the result using a secant method
         try:
-          res=GeneralisedShootingMethod.solve(dXdt, X0, t, boundary_vars,         integrator=random_integrator)
-        except ValueError:
+          res=shooting(dXdt, X0, t, boundary_vars,         integrator=random_integrator)
+        except AttributeError:
           throws=True
 
         self.assertTrue(throws)

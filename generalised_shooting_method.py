@@ -1,22 +1,8 @@
 from scipy.optimize import newton
 from scipy.integrate import odeint
+from ode_integrator_wrapper import func_to_solve
 
-#define function to pass to solve
-def _func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint):
-    """Return the difference between the shot and the target            conditions"""
-    if integrator.__name__ not in ['solve_ivp', 'odeint']:
-        raise ValueError("This function only works with either solve_ivp or odeint from scipy.integrate")
-
-    if integrator.__name__ == 'odeint':
-        sol=boundary_vars - integrator(dXdt,X,t)[-1]
-
-    if integrator.__name__ == 'solve_ivp':
-        res_int=integrator(dXdt, t, X)
-        sol=boundary_vars-integrator(dXdt, t, X).y[-1,-1]
-
-    return sol
-
-def solve(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, tol=1e-4, maxiter=50):
+def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, tol=1e-4, maxiter=50, _func_to_solve=func_to_solve):
     """
     A function that returns an estimation of the starting condition of a BVP subject to the first order differential equations
 
@@ -35,15 +21,14 @@ def solve(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, tol
 """
     #this will cause the function to throw if an unsupported root finder is supplied
     if root_finder.__name__ not in ['fsolve','newton']:
-             raise ValueError("This function only works with either scipy.newton or scipy.fsolve as a root_finder")
+             raise AttributeError("This function only works with either scipy.newton or scipy.fsolve as a root_finder")
+
 
     # if the root finder is a newton
     if root_finder.__name__ == 'fsolve':
-        throw_root_finder=True
-        res = root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)
+        res = root_finder(func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)
     # use the newton method to solve for the initial conditions
-    if root_finder.__name__ == 'newton':
-        throw_root_finder=True
+    elif root_finder.__name__ == 'newton':
         res=root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),tol=tol, maxiter=maxiter)
 
     return res
