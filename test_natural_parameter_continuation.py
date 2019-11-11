@@ -3,16 +3,14 @@
 import pytest
 from natural_parameter_continuation import npc
 
-#@pytest.mark.natural_parameter_continuation_set1
-
-#def test_should_call_newton_multiple_times():
+def test_should_use_lambda_as_():
     # arrange
-#    ode=lambda X,t-0 : [1,1]# system of ODEs
-#    X0=[2,3]# initial guess
-#    par0=dict(a=1)
-#    vary_par=dict(b=2,start=0,stop=2)
+    ode=lambda X,t-0 : [1,b]# system of ODEs
+    X0=[2,3]# initial guess
+    par0=dict(a=1)
+    vary_par=dict(b=2,start=0,stop=2)
 
-#    npc.solve()
+    npc(ode, X0, par0, vary_par)
     # act
 
     # asses

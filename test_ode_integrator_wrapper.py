@@ -1,4 +1,4 @@
-from ode_integrator_wrapper import func_to_solve
+from ode_integrator import func_to_solve
 from scipy.integrate import odeint
 from scipy.integrate import solve_ivp
 

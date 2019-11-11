@@ -1,6 +1,6 @@
 from scipy.optimize import newton
 from scipy.integrate import odeint
-from ode_integrator_wrapper import func_to_solve
+from ode_integrator import func_to_solve
 
 def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, tol=1e-4, maxiter=50, _func_to_solve=func_to_solve):
     """
@@ -30,5 +30,4 @@ def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, 
     # use the newton method to solve for the initial conditions
     elif root_finder.__name__ == 'newton':
         res=root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),tol=tol, maxiter=maxiter)
-
     return res
