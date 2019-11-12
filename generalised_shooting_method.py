@@ -26,7 +26,7 @@ def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, 
 
     # if the root finder is a newton
     if root_finder.__name__ == 'fsolve':
-        res = root_finder(func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)
+        res = root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)
     # use the newton method to solve for the initial conditions
     elif root_finder.__name__ == 'newton':
         res=root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),tol=tol, maxiter=maxiter)
