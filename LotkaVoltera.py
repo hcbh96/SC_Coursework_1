@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from scipy.integrate import odeint
+from scipy.integrate import solve_ivp
 import numpy as np
 
 """
@@ -9,34 +9,45 @@ We are using X=[u,v] to describe both poulations
 - v is the pred pop
 """
 
-#define params
-a=1
-d=0.1
-b=float(input("Enter the rate of predation b ∈ [0.1, 0.5] : "))
 
 # rate of change and pred and prey populations
-def dXdt(X, t=0):
+def lotka_volterra(X, t=0):
      """Return the change in pred and prey populations"""
+      #define params
+     a=1
+     d=0.1
+     b=float(input("Enter the rate of predation b ∈ [0.1, 0.5] : "))
      return np.array([X[0]*(1-X[0])-((a*X[0]*X[1])/(d+X[0])),
                   b*X[1]*(1-(X[1]/X[0]))])
 
-# initial pred and prey populations
-X0=np.array([0.38,0.38])
-t = np.linspace(0,80,10000) #set linspace to 0,24 as limit cycle happens at ~ 21s
+def hopf_bifurcation(t, X):
+    """Return a systems of equations relating to the hopf bifurcation"""
+    v=0
+    return [
+            v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+            X[0]+v*X[1]-X[1]*(X[0]**2+X[1]**2),
+           ]
 
-def solve_int(info=False):
+# initial pred and prey populations
+X0=[0.38,0.38]
+t = (0,80) #set linspace to 0,24 as limit cycle happens at ~ 21s
+
+def solve_int(eq, info=False):
     # solve the ode using odeint as odeint suffices and is easy to use
-    X, infodict = odeint(dXdt, X0, t, full_output=True)
+    X = solve_ivp(eq, t, X0)
     if (info):
         print(infodict['message'])
     return X
 
-def plot_pred_pray(X):
+def plot(sol):
     #plot popultions
-    prey, pred = X.T
+    y0=sol.y[0]
+    y1=sol.y[1]
+    t=sol.t
+    print(t)
     f1 = plt.figure()
-    plt.plot(t, prey, 'r-', label='Prey')
-    plt.plot(t, pred  , 'b-', label='Pred')
+    plt.plot(t, y0, 'r-', label='Prey')
+    plt.plot(t, y1  , 'b-', label='Pred')
     plt.grid(markevery=1)
     plt.legend(loc='best')
     plt.xlabel('time')
@@ -47,8 +58,8 @@ def plot_pred_pray(X):
     plt.show()
     return
 
-X=solve_int()
-plot_pred_pray(X)
+X=solve_int(hopf_bifurcation)
+plot(X)
 
 
 """ I have Isolated a periodic orbit with period 20.94s starting conditions are a=1 d=0.1, b=0.2, pred_pop=0.38 prey_po = 0.38
