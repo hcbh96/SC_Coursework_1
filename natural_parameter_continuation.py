@@ -8,8 +8,9 @@ import numpy as np
 #TODO add handler for local minima
 #TODO add collocation method
 #TODO add tolerance and maxiter
+#TODO make sure that if method = shooting t is set
 
-def npc(func_wrapper, X0, vary_par, t=(0,1), boundary_vars=[0], method='shooting', root_finder=fsolve, integrator=solve_ivp):
+def npc(func_wrapper, X0, vary_par, t=False, boundary_vars=[0], method='shooting', root_finder=fsolve, integrator=solve_ivp):
     """Function performs natural parameter continuation, i.e., it
 simply increments the a parameter by a set amount and attempts
 to find the solution for the new parameter value using the last
