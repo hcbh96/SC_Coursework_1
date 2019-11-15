@@ -23,7 +23,6 @@ def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, 
     if root_finder.__name__ not in ['fsolve','newton']:
              raise AttributeError("This function only works with either scipy.newton or scipy.fsolve as a root_finder")
 
-
     # if the root finder is a newton
     if root_finder.__name__ == 'fsolve':
         res = root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)

@@ -29,10 +29,10 @@ def test_throws_if_passed_random_integrator():
 # test odeint integrator
 def test_odeint():
     #arrange
-    X=[6,6]
+    X=np.array([6,6])
     dXdt=lambda x, t=0 : [1,1]
     t=np.linspace(0,10,1)
-    boundary_vars=[4,4]
+    boundary_vars=np.array([4,4])
 
     #act
     sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint)
@@ -43,10 +43,10 @@ def test_odeint():
 # test solve_ivp integrator
 def test_sole_ivp():
     #arrange
-    X=[6,6]
+    X=np.array([6,6])
     dXdt=lambda x, t=0 : [1,1]
     t=np.linspace(0,1)
-    boundary_vars=[4,4]
+    boundary_vars=np.array([4,4])
 
     #act
     sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=solve_ivp)
@@ -57,10 +57,10 @@ def test_sole_ivp():
 # test solve derivative
 def test_solve_derivative():
     #arrange
-    X=[6,6]
+    X=np.array([6,6])
     dXdt=lambda x, t=0 : [1,1]
     t=np.linspace(0,1)
-    boundary_vars=[4,4]
+    boundary_vars=np.array([4,4])
 
     #act
     sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_derivative=True)

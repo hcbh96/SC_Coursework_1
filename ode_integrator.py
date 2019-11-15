@@ -23,8 +23,9 @@ def func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint, solve_derivative
     if integrator.__name__ == 'odeint':
         sol=boundary_vars - integrator(dXdt,X,t)[-1]
     elif integrator.__name__ == 'solve_ivp':
-        sol=boundary_vars-integrator(dXdt, t, X).y[-1,-1]
+        sol=boundary_vars - integrator(dXdt, t, X).y[-1,-1]
+
     if solve_derivative:
-        sol=dXdt(sol)
+        sol=boundary_vars - dXdt(0, sol)
 
     return sol

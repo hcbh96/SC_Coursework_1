@@ -4,6 +4,8 @@ from scipy.optimize import fsolve
 from find_root import find_root
 import warnings
 import numpy as np
+import warnings
+warnings.filterwarnings("error")#warning were still causing our guess to update      causing solutions to jump therefor I have started catching runtime warnings
 
 #TODO add handler for local minima
 #TODO add collocation method
@@ -49,24 +51,26 @@ found solution as an initial guess.
     #steps
     steps=np.linspace(vary_par['start'], vary_par['stop'], vary_par['steps'])
 
-    #define response array
-    res=[]
+    #define response dict
+    res= { "params": [], "results": [] }
 
     # create linspace
     # while parameter is below limit
     for v in steps:
         """By passing the function wrapper instead of the function I can update the function definition at run time allowing var_par to change with each iteration"""
         func=func_wrapper(v)
-        try:# this is being used in case the root finder can not find a solution due to local minima
+        try:# this is being used for RuntimeErrors and Runtime Warnings
             if method == 'solve':
                 sol=find_root(func, X0, root_finder) #TODO add tol and maxiter
             elif method == 'shooting':
-                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder, tol=1e-4, maxiter=50)
+                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder)
             # update initial guess
             X0=sol
-            res.append(sol)
+            res["params"].append(v)
+            res["results"].append(np.linalg.norm(sol))
         except RuntimeError:
-            warnings.warn("Probably stuck at a local stationary point vary_param: %s, X0 : %s" % (v, X0))
-
+            RuntimeWarning("RuntimeError at '{0}' with value '{1}' tuck at a local stationary point vary_param".format(v, X0))
+        except RuntimeWarning:
+            RuntimeWarning("RuntimeWarning at '{0}' with value '{1}' tuck stuck at a local stationary point vary_param:".format(v, X0))
     return res
 
