@@ -1,8 +1,10 @@
-from scipy.optimize import newton
-from scipy.integrate import odeint
-from ode_integrator import func_to_solve
+from scipy.optimize import fsolve
+from scipy.integrate import solve_ivp
+from ode_integrator import ode_integrator
+from find_root import find_root
+import numpy as np
 
-def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, tol=1e-4, maxiter=50, _func_to_solve=func_to_solve):
+def shooting(dXdt, X0, t, boundary_vars, integrator=solve_ivp, root_finder=fsolve, tol=1e-4, maxiter=50, _func_to_solve=ode_integrator, solve_derivative=False):
     """
     A function that returns an estimation of the starting condition of a BVP subject to the first order differential equations
 
@@ -19,14 +21,6 @@ def shooting(dXdt, X0, t, boundary_vars, integrator=odeint, root_finder=newton, 
     ----------
     Returns : an ndarray containing the corrected initial values for the limit cycle.
 """
-    #this will cause the function to throw if an unsupported root finder is supplied
-    if root_finder.__name__ not in ['fsolve','newton']:
-             raise AttributeError("This function only works with either scipy.newton or scipy.fsolve as a root_finder")
 
-    # if the root finder is a newton
-    if root_finder.__name__ == 'fsolve':
-        res = root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),xtol=tol, maxfev=maxiter)
-    # use the newton method to solve for the initial conditions
-    elif root_finder.__name__ == 'newton':
-        res=root_finder(_func_to_solve,X0,args=(dXdt,t,boundary_vars, integrator),tol=tol, maxiter=maxiter)
+    res = find_root(_func_to_solve, X0, root_finder, args=(dXdt, t, boundary_vars, integrator, solve_derivative))
     return res

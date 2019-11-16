@@ -1,8 +1,8 @@
-from scipy.optimize import newton
+from scipy.optimize import fsolve
 from scipy.integrate import odeint
-from ode_integrator import func_to_solve
+import numpy as np
 
-def find_root(equation, X0, root_finder=newton, tol=1e-4, maxiter=50):
+def find_root(equation, X0, root_finder=fsolve, args=(),tol=1e-4, maxiter=50, full_output=True):
     """
     A function that returns the solution to an equation using either the fsolve or the newton method.
 
@@ -18,11 +18,24 @@ def find_root(equation, X0, root_finder=newton, tol=1e-4, maxiter=50):
     #this will cause the function to throw if an unsupported root finder is supplied
     if root_finder.__name__ not in ['fsolve','newton']:
              raise AttributeError("This function only works with either scipy.newton or scipy.fsolve as a root_finder")
-    # TODO **kwargs or *args here
     # if the root finder is a newton
     if root_finder.__name__ == 'fsolve':
-        res = root_finder(equation,X0,xtol=tol, maxfev=maxiter)
+        res, infodict, ier, mesg = root_finder(equation, X0, args=args, xtol=tol, maxfev=maxiter, full_output=True)
+        # handle non convergence
+        if not ier == 1:
+            raise RuntimeError("The following error was raised: '{0}', for equation: '{1}' with X0 values: '{2}'".format(mesg, equation.__name__, X0))
     # use the newton method to solve for the initial conditions
     elif root_finder.__name__ == 'newton':
-        res=root_finder(equation,X0,tol=tol, maxiter=maxiter)
+        sol = root_finder(equation, X0, args=args, tol=tol, maxiter=maxiter, full_output=True)
+        res = sol[0]
+        print("sol: ".format(sol))
+        try:
+            converged=all(sol[1].converged)
+        except:
+            converged=sol[1].converged
+
+        if not converged:
+            print("Not converged")
+            raise RuntimeError("The newton root finder did not find a root for equation: '{1}' with X0 values:  '{2}'".format(equation.__name__, X0))
+
     return res

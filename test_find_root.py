@@ -1,5 +1,5 @@
 import pytest
-import math
+import numpy as np
 from scipy.optimize import newton
 from scipy.optimize import fsolve
 from find_root import find_root
@@ -13,24 +13,24 @@ def test_should_find_the_root_using_newton():
     sol=find_root(equation, X0, root_finder=newton, tol=1e-4, maxiter=50)
 
     #assert
-    assert math.isclose(sol, -2), "Should equal - 2"
+    assert np.allclose(sol, -2), "Should equal - 2"
 
 
 def test_should_find_root_using_fsolve():
     #arrange
-    equation = lambda x : x - 2
-    X0=7
+    equation = lambda x : x[0] - 2
+    X0=[7]
 
     #act
     sol=find_root(equation,X0,root_finder=fsolve, tol=1e-4, maxiter=50)
 
     #assert
-    assert math.isclose(sol, + 2), "Should be equal to 2"
+    assert np.allclose(sol, [2]), "Should be equal to 2"
 
 def test_should_throw_if_root_finder_is_not_recognised():
     #arrange
-    eq = lambda x : x
-    X0=7
+    eq = lambda x : x[0]
+    X0=[7]
     def fake_root_finder():
         return "Fake it to make it"
     throws=False

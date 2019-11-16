@@ -1,9 +1,9 @@
-from scipy.integrate import odeint
-
+from scipy.integrate import solve_ivp
+import numpy as np
 # TODO : allow any integrator to be used and the args for the integrator to be passed in a more dynamic fashion i.e "args=()"
 
 #define function to pass to solve
-def func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint, solve_derivative=False):
+def ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_derivative=False):
     """Returns the integration of a defined derivative from a defined intial value over a defined period. Additional options include adding in boundary conditions to help with the shooting method and a choice of method when using the solve_ivp integrator.
 
     ____________________
@@ -21,11 +21,17 @@ def func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint, solve_derivative
     if integrator.__name__ not in ['solve_ivp', 'odeint']:
         raise AttributeError("This function only works with either solve_ivp or odeint from scipy.integrate")
     if integrator.__name__ == 'odeint':
-        sol=boundary_vars - integrator(dXdt,X,t)[-1]
+        sol=integrator(dXdt, X, t)
+        sol=sol[-1]
     elif integrator.__name__ == 'solve_ivp':
-        sol=boundary_vars - integrator(dXdt, t, X).y[-1,-1]
+        sol=integrator(dXdt, t, X).y
+        sol=sol[:,-1]
+
 
     if solve_derivative:
-        sol=boundary_vars - dXdt(0, sol)
+        res=boundary_vars - dXdt(0, sol)
+    else :
+        res=boundary_vars - sol
 
-    return sol
+
+    return res

@@ -1,7 +1,7 @@
-from ode_integrator import func_to_solve
+from ode_integrator import ode_integrator
 from scipy.integrate import odeint
 from scipy.integrate import solve_ivp
-
+from ode_integrator import ode_integrator
 import numpy as np
 import pytest
 
@@ -18,7 +18,7 @@ def test_throws_if_passed_random_integrator():
     throws=False
     try:
         print(boundary_vars)
-        func_to_solve(X,dXdt,t,boundary_vars,integrator=random)
+        ode_integrator(X,dXdt,t,boundary_vars,integrator=random)
     except AttributeError:
         throws=True
 
@@ -35,7 +35,7 @@ def test_odeint():
     boundary_vars=np.array([4,4])
 
     #act
-    sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=odeint)
+    sol=ode_integrator(X, dXdt, t, boundary_vars, integrator=odeint)
 
     #assert
     assert np.all(sol) == np.all([2,2])
@@ -49,7 +49,7 @@ def test_sole_ivp():
     boundary_vars=np.array([4,4])
 
     #act
-    sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=solve_ivp)
+    sol=ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp)
 
     #assert
     assert np.all(sol) == np.all([2,2])
@@ -63,7 +63,7 @@ def test_solve_derivative():
     boundary_vars=np.array([4,4])
 
     #act
-    sol=func_to_solve(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_derivative=True)
+    sol=ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_derivative=True)
 
     #assert
     assert np.all(sol) == np.all([1,1])

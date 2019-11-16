@@ -12,7 +12,7 @@ warnings.filterwarnings("error")#warning were still causing our guess to update 
 #TODO add tolerance and maxiter
 #TODO make sure that if method = shooting t is set
 
-def npc(func_wrapper, X0, vary_par, t=False, boundary_vars=[0], method='shooting', root_finder=fsolve, integrator=solve_ivp):
+def npc(func_wrapper, X0, vary_par, t=False, boundary_vars=[0], method='shooting', root_finder=fsolve, integrator=solve_ivp, solve_derivative=False):
     """Function performs natural parameter continuation, i.e., it
 simply increments the a parameter by a set amount and attempts
 to find the solution for the new parameter value using the last
@@ -52,7 +52,7 @@ found solution as an initial guess.
     steps=np.linspace(vary_par['start'], vary_par['stop'], vary_par['steps'])
 
     #define response dict
-    res= { "params": [], "results": [] }
+    res= { "solutions":[],"params": [], "results": [] }
 
     # create linspace
     # while parameter is below limit
@@ -61,12 +61,13 @@ found solution as an initial guess.
         func=func_wrapper(v)
         try:# this is being used for RuntimeErrors and Runtime Warnings
             if method == 'solve':
-                sol=find_root(func, X0, root_finder) #TODO add tol and maxiter
+                sol=find_root(func, X0, root_finder)
             elif method == 'shooting':
-                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder)
+                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder, solve_derivative)
             # update initial guess
             X0=sol
             res["params"].append(v)
+            res["solutions"].append(sol)
             res["results"].append(np.linalg.norm(sol))
         except RuntimeError:
             RuntimeWarning("RuntimeError at '{0}' with value '{1}' tuck at a local stationary point vary_param".format(v, X0))

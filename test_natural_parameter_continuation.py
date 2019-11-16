@@ -25,9 +25,13 @@ def test_should_use_solve_method_via_fsolve():
 
     #assert
     exp=1/math.sqrt(3)# this is the value of the local minima
-    assert len(sol["params"]) == 100, "Should return 100 solutions actually returns    '{0}'".format(len(sol["params"]))
-    assert len(sol["results"]) == 100, "Should return 100 solutions actually returns   '{0}'".format(len(sol["results"]))
-# TODO I need to write assertions here
+    assert len(sol["params"]) == 60, "Should return 60 solutions actually returns    '{0}'".format(len(sol["params"]))
+    assert len(sol["results"]) == 60, "Should return 60 solutions actually returns   '{0}'".format(len(sol["results"]))
+    for i in range(len(sol["params"])):# checks validity of solution before bifurcation
+        calc_result = func_wrapper(sol["params"][i])(sol["solutions"][i])
+        assert math.isclose(calc_result,0, abs_tol=1e-03), "The solution to the function given the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
+
+
 def test_return_solution_when_newton_used():
     """Returns two roots to the equation using the newton method"""
     # arrange
@@ -44,8 +48,12 @@ def test_return_solution_when_newton_used():
     #assert
     assert len(sol["params"]) == 100, "Should return 100 solutions actually returns    '{0}'".format(len(sol["params"]))
     assert len(sol["results"]) == 100, "Should return 100 solutions actually returns   '{0}'".format(len(sol["results"]))
-# NOTE when using the newton root finder in both cases the solution seems to blow up not sure why yet
-def test_return_continuous_solution_to_hopf_bifurcation_using_newton_and_solve_ivp():
+    for i in range(len(sol["params"])):# checks validity of solution before bifurcation
+        calc_result = func_wrapper(sol["params"][i])(sol["results"][i])
+        assert math.isclose(calc_result,0, abs_tol=1e-03), "The solution to the function given    the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
+
+
+def test_return_solution_using_newton_and_solve_ivp():
     """Calculates the continuous solution to the Hopf bifurcation and asserts the first and last solution is correct i.e b=2 and b=-1 using a newton root_finder and solve_ivp integrator"""
     # arrange
     def func_wrapper(v):
@@ -60,13 +68,14 @@ def test_return_continuous_solution_to_hopf_bifurcation_using_newton_and_solve_i
     # act
     sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, integrator=solve_ivp, root_finder=newton)
     # assert
-    print(sol)
-    assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
-    assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
+    #assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
+    #assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
+    for i in range(len(sol["params"])):# checks validity of solutions ensuring a stop pre bifurcation
+        calc_result = func_wrapper(sol["params"][i])(0, sol["solutions"][i])
+        assert math.isclose(np.linalg.norm(calc_result),0, abs_tol=1e-03), "The solution to the function given    the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
 
 
-# NOTE when using the newton root finder in both cases the solution seems to blow up not sure why yet
-def test_return_continuous_solution_to_hopf_bifurcation_using_newton_and_odeint():
+def test_return_solution_using_newton_and_odeint():
     """Calculates the continuous solution to the Hopf bifurcation using the shooting method with odeint the solution returned is actually a local minima but the test takes account of that and you will se warning printed out"""
     # arrange
     def func_wrapper(v):
@@ -82,11 +91,38 @@ def test_return_continuous_solution_to_hopf_bifurcation_using_newton_and_odeint(
     # act
     sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=newton, integrator=odeint)
     # assert
-    print(sol)
-    assert len(sol["params"]) == 8, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
-    assert len(sol["results"]) == 8, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
+    #assert len(sol["params"]) == 8, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
+    #assert len(sol["results"]) == 8, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
+    for i in range(len(sol["params"])):# checks validity of solutions ensuring a stop pre           bifurcation
+        calc_result = func_wrapper(sol["params"][i])(sol["solutions"][i],0)
+        assert math.isclose(np.linalg.norm(calc_result),0, abs_tol=1e-03), "The solution to the function given      the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
+
+
 def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_solve_ivp():
     """Calculates the continuous solution to the Hopf bifurcation this is having issues  as    if b         decreases instead of increase while array does not work"""
+    # arrange
+    def func_wrapper(v):
+        # X t has to be t X when using solve_ivp
+        return lambda t, X : [
+                v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+v*X[1]+X[1]*(X[0]**2+X[1]**2),
+                ]
+    X0=[1,1]
+    vary_par=dict(start=0, stop=2, steps=10)
+    b_vars=[0,0]
+    t=(0,6.25)
+    # act
+    sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve,integrator=solve_ivp, solve_derivative=True)
+    # assert
+    assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    %s " % len(sol)
+    assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   %s " % len(sol)
+    for i in range(len(sol["params"])):# checks validity of solution before bifurcation
+         calc_result = func_wrapper(sol["params"][i])(0, sol["solutions"][i])
+         assert math.isclose(calc_result, 0, abs_tol=1e-03), "The solution to the function     given the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i],       calc_result)
+
+
+def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_odeint():
+    """Calculates the continuous solution to the Hopf bifurcation this is having issues  as    if b decreases instead of increase while array does not work"""
     # arrange
     def func_wrapper(v):
         # X t has to be t X when using solve_ivp
@@ -99,29 +135,9 @@ def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_solve_i
     b_vars=[1,1]
     t=(0,6.25)
     # act
-    sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve,integrator=solve_ivp)
+    sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve, integrator=odeint, solve_derivative=True)
     # assert
-    assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    %s " % len(sol)
-    assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   %s " % len(sol)
 
-def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_odeint():
-    """Calculates the continuous solution to the Hopf bifurcation this is having issues  as    if b decreases instead of increase while array does not work"""
-    # arrange
-    def func_wrapper(v):
-        # X t has to be t X when using solve_ivp
-        return lambda X, t=0 : [
-                v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+v*X[1]+X[1]*(X[0]**2+X[1]**2),
-                ]
-    X0=[1,1]
-    vary_par=dict(start=0, stop=2, steps=10)
-    b_vars=[1,1]
-    t=(0,6.25)
-    # act
-    sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve, integrator=odeint)
-    # assert
-    assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
-    assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
 
 def test_return_continuous_solution_to_modified_hopf_bifurcation_using_fsolve_and_solve_ivp():
     """Calculates the continuous solution to the Hopf bifurcation this is having issues  as    if           b         decreases instead of increase while array does not work"""
@@ -148,7 +164,7 @@ def test_return_continuous_solution_to_modified_hopf_bifurcation_using_fsolve_an
     # arrange
     def func_wrapper(v):
         # X t has to be t X when using solve_ivp
-        return lambda X, t=0 : [
+        return lambda t, X : [
                 v*X[0]-X[1]+X[0]*(X[0]**2+X[1]**2)-X[0]*(X[0]**2+X[1]**2)**2,
                 X[0]+v*X[1]+X[1]*(X[0]**2+X[1]**2)-X[1]*(X[0]**2+X[1]**2)**2,
             ]
