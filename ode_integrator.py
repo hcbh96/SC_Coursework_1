@@ -23,14 +23,15 @@ def ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_deriva
     if integrator.__name__ == 'odeint':
         sol=integrator(dXdt, X, t)
         sol=sol[-1]
+        if solve_derivative:
+            res=boundary_vars - dXdt(sol)
     elif integrator.__name__ == 'solve_ivp':
         sol=integrator(dXdt, t, X).y
         sol=sol[:,-1]
+        if solve_derivative:
+            res=boundary_vars - dXdt(0, sol)
 
-
-    if solve_derivative:
-        res=boundary_vars - dXdt(0, sol)
-    else :
+    if not solve_derivative:
         res=boundary_vars - sol
 
 

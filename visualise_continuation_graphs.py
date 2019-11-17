@@ -1,6 +1,5 @@
 """
 This file will be used to plot and visualise the solutions to natural parameter continuation.
-
 """
 import matplotlib.pyplot as plt
 import numpy as np
@@ -30,7 +29,6 @@ def hopf_bifurcation_modified(beta):
 """
 Visualise solutions for the algebraic cubic equations
 """
-
 X0=[1]
 vary_par=dict(start=-2, stop=2, steps=100)
 sol=npc(cubic_equation, X0, vary_par, method='solve', root_finder=fsolve)
@@ -43,10 +41,10 @@ fig1.savefig("cubic_solutions_plot")
 """
 Visualise solutions to the Hopf Bifurcation Normal form
 """
-X0=np.array([1,1])
+X0=np.array([0.33,0.33])
 vary_par=dict(start=0, stop=2, steps=10)
-b_vars=np.array([0,0])
-t=(0,6.25)
+b_vars=np.array([0.33,0.33])
+t=(0,6.3)
 sol=npc(hopf_bifurcation, X0, vary_par, t, method='shooting', boundary_vars=b_vars,  root_finder=fsolve,integrator=solve_ivp)
 fig2=plt.figure()
 plt.plot(sol["params"], sol["results"])

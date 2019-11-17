@@ -21,6 +21,5 @@ def shooting(dXdt, X0, t, boundary_vars, integrator=solve_ivp, root_finder=fsolv
     ----------
     Returns : an ndarray containing the corrected initial values for the limit cycle.
 """
-
     res = find_root(_func_to_solve, X0, root_finder, args=(dXdt, t, boundary_vars, integrator, solve_derivative))
     return res

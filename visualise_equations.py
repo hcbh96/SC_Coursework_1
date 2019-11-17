@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 from scipy.integrate import solve_ivp
+from scipy.integrate import odeint
 import numpy as np
 
 def lotka_volterra(b):
@@ -17,7 +18,14 @@ def hopf_bifurcation(beta):
     return lambda t, X : [
             beta*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
             X[0]+beta*X[1]-X[1]*(X[0]**2+X[1]**2),
-           ]
+            ]
+
+def hopf_bifurcation_odeint(beta):
+    """Return a systems of equations relating to the hopf bifurcation"""
+    return lambda X, t=0 : [
+            beta*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+            X[0]+beta*X[1]-X[1]*(X[0]**2+X[1]**2),
+            ]
 
 def hopf_bifurcation_modified(beta):
     """Return a systems of equations relating to the hopf bifurcation"""
@@ -39,9 +47,9 @@ def visualise(Y, t, fig_name):
         plt.grid()
         plt.xlabel('t')
         plt.ylabel('Y')
-        plt.title('Equations Plot')
-    f1.savefig(fig_name + '.png')
-    #plt.show()
+        plt.title(fig_name)
+    #f1.savefig(fig_name + '.png')
+    plt.show()
     return
 
 
@@ -72,18 +80,43 @@ This should provide reasonable data for testing
 """
 
 # initial pred and prey populations
-X0=[0.06,0.06]
-t=(0,20) #set linspace to 0,24 as limit cycle happens at ~ 21s
-b=0
-sol=solve_ivp(hopf_bifurcation(b), t, X0)
+X0=[0.33, 0.33]
+t=(0,6.3) #set linspace to 0,24 as limit cycle happens at ~ 21s
+b=2
+sol=solve_ivp(hopf_bifurcation(b), t, X0, max_step=0.1)
 visualise(sol.y,sol.t, 'hopf_bifurcation_start')
 
  # initial pred and prey populations
-X0=[1,1]
-t = (0,20) #set linspace to 0,24 as limit cycle happens at ~ 21s
-b=2
+X0=[0.02760449, 0.10273345]
+t = (0,6.3) #set linspace to 0,24 as limit cycle happens at ~ 21s
+b=0.6666666666666666
 sol=solve_ivp(hopf_bifurcation(b), t, X0)
 visualise(sol.y,sol.t, 'hopf_bifurcation_end')
+
+
+"""
+Plotting the Hopf Bifurcation normal form I will do this twice
+
+- once for b=0
+- once for b=2
+
+This should provide reasonable data for testing
+
+"""
+
+# initial pred and prey populations
+X0=[0.33, 0.33]
+t=np.linspace(0,6.3,100) #set linspace to 0,24 as limit cycle happens at ~ 21s
+b=2
+sol=odeint(hopf_bifurcation_odeint(b), X0, t)
+visualise(sol.T,t, 'hopf_bifurcation_start')
+
+# initial pred and prey populations
+X0=[0.02760449, 0.10273345]
+t = np.linspace(0,6.3,100) #set linspace to 0,24 as limit cycle happens at ~ 21s
+b=0.6666666666666666
+sol=odeint(hopf_bifurcation_odeint(b), X0, t)
+visualise(sol.T, t, 'hopf_bifurcation_end')
 
 
 """

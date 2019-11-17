@@ -52,26 +52,34 @@ found solution as an initial guess.
     steps=np.linspace(vary_par['start'], vary_par['stop'], vary_par['steps'])
 
     #define response dict
-    res= { "solutions":[],"params": [], "results": [] }
+    res= { "solutions":[],"params": [], "results": [], "X0": [] }
 
-    # create linspace
-    # while parameter is below limit
+    #Loop through param values running shooting to find solution
     for v in steps:
         """By passing the function wrapper instead of the function I can update the function definition at run time allowing var_par to change with each iteration"""
-        func=func_wrapper(v)
+
+        func=func_wrapper(v)# set up equation
+
+        res["X0"].append(X0)# prep response var
+
         try:# this is being used for RuntimeErrors and Runtime Warnings
             if method == 'solve':
                 sol=find_root(func, X0, root_finder)
             elif method == 'shooting':
-                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder, solve_derivative)
-            # update initial guess
-            X0=sol
+                sol=shooting(func, X0, t, boundary_vars, integrator, root_finder, solve_derivative=solve_derivative)
+
+            X0=sol # update initial guess
+
+            #prep result to return
             res["params"].append(v)
             res["solutions"].append(sol)
             res["results"].append(np.linalg.norm(sol))
+
+        # handle errors
         except RuntimeError:
             RuntimeWarning("RuntimeError at '{0}' with value '{1}' tuck at a local stationary point vary_param".format(v, X0))
         except RuntimeWarning:
             RuntimeWarning("RuntimeWarning at '{0}' with value '{1}' tuck stuck at a local stationary point vary_param:".format(v, X0))
+
     return res
 

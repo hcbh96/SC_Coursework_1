@@ -28,14 +28,14 @@ def find_root(equation, X0, root_finder=fsolve, args=(),tol=1e-4, maxiter=50, fu
     elif root_finder.__name__ == 'newton':
         sol = root_finder(equation, X0, args=args, tol=tol, maxiter=maxiter, full_output=True)
         res = sol[0]
-        print("sol: ".format(sol))
         try:
-            converged=all(sol[1].converged)
+            print("sol: '{0}'".format(sol[1]))
+            converged=all(sol[1])
         except:
+            print("sol: '{0}'".format(sol[1]))
             converged=sol[1].converged
 
         if not converged:
-            print("Not converged")
-            raise RuntimeError("The newton root finder did not find a root for equation: '{1}' with X0 values:  '{2}'".format(equation.__name__, X0))
+            raise RuntimeError("The newton root finder did not find a root for equation: '{0}' with X0 values:  '{1}'".format(equation.__name__, X0))
 
     return res

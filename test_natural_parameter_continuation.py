@@ -84,18 +84,17 @@ def test_return_solution_using_newton_and_odeint():
                 v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
                 X[0]+v*X[1]-X[1]*(X[0]**2+X[1]**2),
                 ]
-    X0=[1,1]
+    X0=np.array([0.33,0.33])
     vary_par=dict(start=0, stop=2, steps=10)
-    b_vars=[1,1]
-    t=(0,6.25)
+    b_vars=np.array([0.33,0.33])
+    t=np.linspace(0,6.3)
     # act
     sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=newton, integrator=odeint)
     # assert
-    #assert len(sol["params"]) == 8, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
-    #assert len(sol["results"]) == 8, "Should return 10 solutions actually returns   '{0}'".format(len(sol["results"]))
-    for i in range(len(sol["params"])):# checks validity of solutions ensuring a stop pre           bifurcation
-        calc_result = func_wrapper(sol["params"][i])(sol["solutions"][i],0)
-        assert math.isclose(np.linalg.norm(calc_result),0, abs_tol=1e-03), "The solution to the function given      the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
+    assert len(sol["params"]) == 8, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
+    for i in range(len(sol["params"])):# checks validity of all solutions
+        calc_result = odeint(func_wrapper(sol["params"][i]), sol["solutions"][i], t)
+        assert np.allclose(calc_result, b_vars, atol=1e-01), "Integrating the function given the param : '{0}', X0: '{1}' should return the b_vars: '{2}' but instead returns : '{3}'".format(sol["params"][i], sol["solutions"][i], b_vars, calc_result)
 
 
 def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_solve_ivp():
@@ -103,22 +102,21 @@ def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_solve_i
     # arrange
     def func_wrapper(v):
         # X t has to be t X when using solve_ivp
-        return lambda t, X : [
+        return lambda t, X : np.array([
                 v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+v*X[1]+X[1]*(X[0]**2+X[1]**2),
-                ]
-    X0=[1,1]
+                X[0]+v*X[1]-X[1]*(X[0]**2+X[1]**2),
+                ])
+    X0=np.array([0.33,0.33])
     vary_par=dict(start=0, stop=2, steps=10)
-    b_vars=[0,0]
-    t=(0,6.25)
+    b_vars=np.array([0.33,0.33])
+    t=(0,6.3)
     # act
-    sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve,integrator=solve_ivp, solve_derivative=True)
+    sol=npc(func_wrapper, X0, vary_par, t, boundary_vars=b_vars, root_finder=fsolve,integrator=solve_ivp)
     # assert
-    assert len(sol["params"]) == 10, "Should return 10 solutions actually returns    %s " % len(sol)
-    assert len(sol["results"]) == 10, "Should return 10 solutions actually returns   %s " % len(sol)
+    assert len(sol["params"]) == 8, "Ensure there are 10 solutions"
     for i in range(len(sol["params"])):# checks validity of solution before bifurcation
-         calc_result = func_wrapper(sol["params"][i])(0, sol["solutions"][i])
-         assert math.isclose(calc_result, 0, abs_tol=1e-03), "The solution to the function     given the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i],       calc_result)
+        calc_result = solve_ivp(func_wrapper(sol["params"][i]), t, sol["solutions"][i]).y[:,-1]
+        assert np.allclose(calc_result, b_vars, atol=1e-01), "Integrating the function     given the param : '{0}', X0: '{1}' should return the b_vars: '{2}' but instead returns :     '{3}'".format(sol["params"][i], sol["solutions"][i], b_vars, calc_result)
 
 
 def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_odeint():
@@ -126,17 +124,22 @@ def test_return_continuous_solution_to_hopf_bifurcation_using_fsolve_and_odeint(
     # arrange
     def func_wrapper(v):
         # X t has to be t X when using solve_ivp
-        return lambda t, X : [
+        return lambda X, t=0 : np.array([
                 v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+v*X[1]+X[1]*(X[0]**2+X[1]**2),
-                ]
-    X0=[1,1]
+                X[0]+v*X[1]-X[1]*(X[0]**2+X[1]**2),
+                ])
+    X0=np.array([0.33,0.33])
     vary_par=dict(start=0, stop=2, steps=10)
-    b_vars=[1,1]
-    t=(0,6.25)
-    # act
+    b_vars=np.array([0.33,0.33])
+    t=np.linspace(0,6.3)
+    #act
     sol=npc(func_wrapper, X0, vary_par, t, method='shooting', boundary_vars=b_vars, root_finder=fsolve, integrator=odeint, solve_derivative=True)
     # assert
+    assert len(sol["params"]) == 9, "Ensure there are 10 solutions"
+    for i in range(len(sol["params"])):# checks validity of solution before bifurcation
+       calc_result = odeint(func_wrapper(sol["params"][i]), sol["solutions"][i], t)
+       calc_result=calc_result[-1]
+       assert np.allclose(calc_result, b_vars, atol=1e-01), "Integrating the              function     given the param : '{0}', X0: '{1}' should return the b_vars: '{2}' but instead  returns :     '{3}'".format(sol["params"][i], sol["solutions"][i], b_vars, calc_result)
 
 
 def test_return_continuous_solution_to_modified_hopf_bifurcation_using_fsolve_and_solve_ivp():
