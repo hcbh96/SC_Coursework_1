@@ -42,29 +42,29 @@ fig1.savefig("cubic_solutions_plot")
 Visualise solutions to the Hopf Bifurcation Normal form
 """
 X0=np.array([0.33,0.33])
-vary_par=dict(start=0, stop=2, steps=10)
+vary_par=dict(start=0, stop=2, steps=50)
 b_vars=np.array([0.33,0.33])
 t=(0,6.3)
 sol=npc(hopf_bifurcation, X0, vary_par, t, method='shooting', boundary_vars=b_vars,  root_finder=fsolve,integrator=solve_ivp)
 fig2=plt.figure()
 plt.plot(sol["params"], sol["results"])
 plt.title("Hopf Bifurcation Plot")
-#plt.show()
+plt.show()
 fig2.savefig("hopf_bif_plot")
 
 
 """
-Visualise solutions to the Hopf Bifurcation Normal form
+Visualise solutions to the Modified Hopf Bifurcation
 """
 X0=np.array([1,1])
 vary_par=dict(start=2, stop=-1, steps=50)
-b_vars=np.array([0,0])
-t=(0,6.25)
+b_vars=np.array([1,1])
+t=(0,6.35)
 sol=npc(hopf_bifurcation_modified, X0, vary_par, t, method='shooting',                        boundary_vars=b_vars,  root_finder=fsolve,integrator=solve_ivp)
 fig2=plt.figure()
 plt.plot(sol["params"], sol["results"])
 plt.title("Hopf Bifurcation Modified Plot")
-#plt.show()
+plt.show()
 fig2.savefig("hopf_bif_modified_plot")
 
 

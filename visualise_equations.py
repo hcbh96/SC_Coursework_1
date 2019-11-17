@@ -66,7 +66,7 @@ X0=[0.38,0.38]
 t = (0,80) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=0.2
 sol=solve_ivp(lotka_volterra(b), t, X0)
-visualise(sol.y,sol.t, 'lotka_volterra')
+#visualise(sol.y,sol.t, 'lotka_volterra')
 
 
 """
@@ -84,14 +84,14 @@ X0=[0.33, 0.33]
 t=(0,6.3) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=2
 sol=solve_ivp(hopf_bifurcation(b), t, X0, max_step=0.1)
-visualise(sol.y,sol.t, 'hopf_bifurcation_start')
+#visualise(sol.y,sol.t, 'hopf_bifurcation_start')
 
  # initial pred and prey populations
 X0=[0.02760449, 0.10273345]
 t = (0,6.3) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=0.6666666666666666
 sol=solve_ivp(hopf_bifurcation(b), t, X0)
-visualise(sol.y,sol.t, 'hopf_bifurcation_end')
+#visualise(sol.y,sol.t, 'hopf_bifurcation_end')
 
 
 """
@@ -109,14 +109,14 @@ X0=[0.33, 0.33]
 t=np.linspace(0,6.3,100) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=2
 sol=odeint(hopf_bifurcation_odeint(b), X0, t)
-visualise(sol.T,t, 'hopf_bifurcation_start')
+#visualise(sol.T,t, 'hopf_bifurcation_start')
 
 # initial pred and prey populations
 X0=[0.02760449, 0.10273345]
 t = np.linspace(0,6.3,100) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=0.6666666666666666
 sol=odeint(hopf_bifurcation_odeint(b), X0, t)
-visualise(sol.T, t, 'hopf_bifurcation_end')
+#visualise(sol.T, t, 'hopf_bifurcation_end')
 
 
 """
@@ -128,9 +128,9 @@ Plotting modified Hopf Bifurcation normal form
  """
 
 # initial pred and prey populations
-X0=[0.7,0.7]
-t=(0,20) #set linspace to 0,24 as limit cycle happens at ~ 21s
-b=2
+X0=[0.9769836,  0.87001483]
+t=(0,28) #set linspace to 0,24 as limit cycle happens at ~ 21s
+b=0.04081632653061229
 sol=solve_ivp(hopf_bifurcation_modified(b), t, X0)
 visualise(sol.y,sol.t, 'hopf_bifurcation_modified_start')
 
@@ -139,6 +139,6 @@ X0=[0.5,0.5]
 t = (0,20) #set linspace to 0,24 as limit cycle happens at ~ 21s
 b=-1
 sol=solve_ivp(hopf_bifurcation_modified(b), t, X0)
-visualise(sol.y,sol.t, 'hopf_bifurcation_modified_end')
+#visualise(sol.y,sol.t, 'hopf_bifurcation_modified_end')
 
 
