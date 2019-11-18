@@ -1,8 +1,6 @@
 from scipy.integrate import solve_ivp
 import numpy as np
-# TODO : allow any integrator to be used and the args for the integrator to be passed in a more dynamic fashion i.e "args=()"
 
-#define function to pass to solve
 def ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_derivative=False):
     """Returns the integration of a defined derivative from a defined intial value over a defined period. Additional options include adding in boundary conditions to help with the shooting method and a choice of method when using the solve_ivp integrator.
 
@@ -34,5 +32,6 @@ def ode_integrator(X, dXdt, t, boundary_vars, integrator=solve_ivp, solve_deriva
     if not solve_derivative:
         res=boundary_vars - sol
 
-
     return res
+
+#TODO: make notes inside this function
