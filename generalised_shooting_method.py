@@ -8,9 +8,7 @@ def phase_cond(u, dudt, t):
     """
     Return the phase_cond of the equation (always 0)
     """
-    res=dudt(0, solve_ivp(dudt, t, u).y[:,-1])
-    integral=dudt(0, solve_ivp(dudt, t, u).y[0])
-    print("Derivative at integral: {}".format(integral))
+    res= np.array(dudt(0, solve_ivp(dudt, t, u).y[:,-1]))
     return res
 
 def periodicity_cond(u, dudt, t, b_vars):
@@ -18,8 +16,7 @@ def periodicity_cond(u, dudt, t, b_vars):
     Returns the periodicity_cond of the equation
     """
     # integrate the ode for time t from starting position U
-    res = b_vars - solve_ivp(dudt, t, u).y[:,-1]
-
+    res = np.array(b_vars - solve_ivp(dudt, t, u).y[:,-1])
     return res
 
 def g(u, dudt, t, b_vars):
@@ -27,26 +24,31 @@ def g(u, dudt, t, b_vars):
     return res
 
 
-def shooting(u0, p, func_wrapper, t, b_vars):
+def shooting(u0, dudt, t, b_vars):
     """
     A function that returns an estimation of the starting condition of a BVP subject to the first order differential equations
 
     Parameters:
     ___________
+
         dudt : an ndarray containing the first order differtial equations to be solved
+
         u0 : ndarray of the expected starting conditions of the equation
+
         p : any additional parameters for dudt
-        t: 2-tuple of floatsi. Interval of integration (t0, tf). The solver starts with t=t0 and integrates until it reaches t=tf.
+
+        t : 2-tuple of floatsi. Interval of integration (t0, tf). The solver starts with t=t0 and integrates until it reaches t=tf.
+
         boundary_vars : The periodicity conditions that need to be satisfied
+
     ----------
     Returns : an ndarray containing the corrected initial values for the limit cycle.
-"""
-    dudt = func_wrapper(p)
-    print("Variable p : {}".format(p))
-    #TODO:_func_to_solve currently only being solved for either x(t)=bound_var or dxdt=bound var it needs to be solved for both [u0-ut, dudt]=0
-    sol = root(g, u0, args=(dudt, t, b_vars), method='lm')
+    """
 
-    if sol["success"]:
+    #TODO:_func_to_solve currently only being solved for either x(t)=bound_var or dxdt=bound var it needs to be solved for both [u0-ut, dudt]=0
+    sol = root(g, u0, args=(dudt, t, b_vars), method="lm")
+
+    if sol["success"] == True:
          print("Root finder found the solution u={} after {} function calls".format(sol["x"], sol["nfev"]))
          return sol["x"]
     else:

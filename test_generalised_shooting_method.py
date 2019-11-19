@@ -14,7 +14,7 @@ import pytest
 #define a test class
 def test_on_constant_derivative_find_root_with_odeint():
     # rate of change set to conistant
-    def dXdt(X, t=0):
+    def dXdt(t, X):
         return [1]
 
     #define an initial guess
@@ -24,33 +24,33 @@ def test_on_constant_derivative_find_root_with_odeint():
     boundary_vars=[1]
 
     # define timespan
-    t=np.linspace(0,1,10)
+    t=(0,1)
 
     #calc the result using a secant method
-    res=shooting(dXdt, X0, t, boundary_vars, integrator=odeint)
+    res=shooting(X0, dXdt, t, boundary_vars)
+    exp = solve_ivp(dXdt, t, res).y[:,-1]
+    assert np.isclose(boundary_vars, exp, atol=1e-03)
 
-    assert np.isclose(res, [0], atol=1e-03), "'{0}' be close to 0".format(res)
 
-
-def test_with_varying_derivative_to_find_stationary_point_with_solve_ivp():
+def test_with_varying_derivative_to_find_stationary_point():
     """This function is designed to test the generalised shooting method to an accuracy of 6 decimal places on a very simple system of ODEs"""
     # rate of change set to constant
     def dXdt(t, X):
         return np.array([X[0],X[1]])
 
     #define an initial guess
-    X0=np.array([1,1])
+    X0=np.array([0.5,0.5])
 
     #expected starting params at boundaries
-    boundary_vars=np.array([1,1])
+    b_vars=np.array([1,1])
 
     # define timespan
-    t=np.linspace(0,10)
+    t=(0,1)
 
     #calc the result using a secant method
-    res=shooting(dXdt, X0, t, boundary_vars, integrator=solve_ivp, solve_derivative=True)
-
-    assert np.allclose(res, [0.815,0.815], atol=1e-03), "'{0}' should be close to [1,1]".format(res)
+    res=shooting(X0, dXdt, t, b_vars)
+    exp = solve_ivp(dXdt, t, res).y[:,-1]
+    assert np.allclose(b_vars, exp, atol=1e-03)
 
 
 def test_on_lotka_volterra():
@@ -61,7 +61,7 @@ def test_on_lotka_volterra():
      a=1; d=0.1; b=0.2
 
      # rate of change and pred and prey populations
-     def dXdt_lotka_volterra(t, X):
+     def dXdt(t, X):
          """Return the change in pred and prey populations"""
          return np.array([
              X[0]*(1-X[0])-((a*X[0]*X[1])/(d+X[0])),
@@ -72,41 +72,15 @@ def test_on_lotka_volterra():
      X0=[0.51,0.5]
 
      #expected starting params at boundary
-     boundary_vars=[0.38, 0.38]
+     b_vars=[0.5, 0.5]
 
      #time range
-     t=np.linspace(0,20.76)
+     t=(0,20.76)
 
      #calc the result using a secant method
-     res=shooting(dXdt_lotka_volterra, X0, t, boundary_vars)
-     assert np.allclose(res, 0.38, atol=1e-01), "'{0}' should be close to [0.38, 0.38]".format(res)
-
-
-def test_on_hopf_bifurcation():
-    """
-    This function is intended to test the  generalised shooting method on the Hopf Bifurcation ensuring that the absolute tolerance is within 2 decimal places
-    """
-    sigma=1;beta=0
-    def dXdt_hopf_bif(t, X):
-        """Function to calculate the rate of change of the Hopf Bifurcation at position X"""
-        return np.array([
-                beta*X[0]-X[1]+sigma*X[0]*(X[0]**2+X[1]**2),
-                X[0]+beta*X[1]+sigma*X[1]*(X[0]**2+X[1]**2)
-                ])
-
-    # make an initial condition guess
-    X0=[0.6,0.6]
-
-    # set the boundary conditions
-    boundary_vars=[0,1.5]
-
-    # define a time range
-    t=np.linspace(0,6.25)
-
-    #find the solution of the generalised shooting method
-    res=shooting(dXdt_hopf_bif, X0, t, boundary_vars)
-    expected = [ 0.15, 1.19 ]
-    assert np.allclose(res, expected, atol=1e-02), "'{0}' should be close to '{1}'".format(res, expected)
+     res=shooting(X0, dXdt, t, b_vars)
+     exp = solve_ivp(dXdt, t, res).y[:,-1]
+     assert np.allclose(b_vars, exp, atol=1e-02)
 
 
 def test_on_system_of_three():
@@ -117,7 +91,6 @@ def test_on_system_of_three():
 
      The specific point of this test is to ensure that my shooting method works on systems of first order linear ODEs of greater than 2 dimensions, this test focuses solely on doing that in the most simple way possible, i.e by having a system of three linearly independent first order ODE which all have solutions at 0.
 """
-     sigma=-1;beta=1
      def dXdt(t, X):
          """Function to calculate the rate of change of the Hopf Bifurcation  at position X"""
          return np.array([
@@ -136,9 +109,9 @@ def test_on_system_of_three():
      t=np.linspace(0,10)
 
      #find the solution of the generalised shooting method
-     res=shooting(dXdt, X0, t, boundary_vars)
-     expected = [0.82, 0.82, 0.82 ]
-     assert np.allclose(res, expected, atol=1e-02), "'{0}' should be close to '{1}'".format(res, expected)
+     res=shooting(X0, dXdt, t, boundary_vars)
+     expected = [0.82, 0.82, 0.82]
+     assert np.allclose(res, expected, atol=1e-02)
 
 
 def test_unmatched_input_dimensions():
@@ -177,7 +150,7 @@ def test_unmatched_input_dimensions_2():
 
 def test_shooting_method_with_no_convergence():
     # rate of change and pred and prey populations
-    def dXdt(X, t=0):
+    def dXdt(t, X):
         """Return the change in pred and prey populations"""
         return 0#this has no roots
 

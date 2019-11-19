@@ -47,15 +47,17 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
     #Loop through param values running shooting to find solution
     for par in steps:
         """By passing the function wrapper instead of the function I can update the function definition at run time allowing var_par to change with each iteration"""
+        # prep function
+        dudt = func_wrapper(p)
+
         if not shooting:
-            u, info, ier, msg = fsolve(func_wrapper, u0, args=(par), full_output=True)
+            u, info, ier, msg = fsolve(dudt, u0, full_output=True)
             if ier == 1:
                 print("Root finder found the solution u={} after {} function calls; the norm of the final residual is {}".format(u, info["nfev"], np.linalg.norm(info["fvec"])))
             else:
                 print("Root finder failed with error message: {}".format(msg))
         else:
-            u=shooting(u0, par, func_wrapper, t, b_vars)
-
+            u=shooting(u0, dudt, t, b_vars)
 
         #prep result to return
         if u is not None:
