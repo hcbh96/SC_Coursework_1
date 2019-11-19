@@ -1,11 +1,7 @@
 from generalised_shooting_method import shooting
 from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
-from find_root import find_root
-import warnings
 import numpy as np
-import warnings
-warnings.filterwarnings("error")#warning were still causing our guess to update      causing solutions to jump therefor I have started catching runtime warnings
 
 #TODO add handler for local minima
 #TODO add collocation method

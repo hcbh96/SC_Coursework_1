@@ -1,7 +1,5 @@
 from scipy.optimize import root
 from scipy.integrate import solve_ivp
-from ode_integrator import ode_integrator
-from find_root import find_root
 import numpy as np
 
 def phase_cond(u, dudt, t):
@@ -45,7 +43,7 @@ def shooting(u0, dudt, t, b_vars):
     Returns : an ndarray containing the corrected initial values for the limit cycle.
     """
 
-    sol = root(g, u0, args=(dudt, t, b_vars), method="lm")
+    sol = newton(g, u0, args=(dudt, t, b_vars), method="lm")
 
     if sol["success"] == True:
          print("Root finder found the solution u={} after {} function calls".format(sol["x"], sol["nfev"]))
