@@ -45,7 +45,6 @@ def shooting(u0, dudt, t, b_vars):
     Returns : an ndarray containing the corrected initial values for the limit cycle.
     """
 
-    #TODO:_func_to_solve currently only being solved for either x(t)=bound_var or dxdt=bound var it needs to be solved for both [u0-ut, dudt]=0
     sol = root(g, u0, args=(dudt, t, b_vars), method="lm")
 
     if sol["success"] == True:
