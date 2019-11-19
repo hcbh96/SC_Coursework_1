@@ -47,7 +47,6 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
     #Loop through param values running shooting to find solution
     for par in steps:
         """By passing the function wrapper instead of the function I can update the function definition at run time allowing var_par to change with each iteration"""
-
         if not shooting:
             u, info, ier, msg = fsolve(func_wrapper, u0, args=(par), full_output=True)
             if ier == 1:
@@ -57,26 +56,13 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
         else:
             u=shooting(u0, par, func_wrapper, t, b_vars)
 
-        X0=u # update initial guess
 
         #prep result to return
-        res["params"].append(p)
-        res["solutions"].append(u)
+        if u is not None:
+            u0=u # update initial guess
+            res["params"].append(par)
+            res["solutions"].append(u)
 
     return res
 
-def func_wrapper(p):
-    return lambda t, u : np.array([
-        p*u[0]-u[1]-u[0]*(u[0]**2+u[1]**2),
-        u[0]+p*u[1]-u[1]*(u[0]**2+u[1]**2),
-    ])
-
-u0=np.array([0.33,0.33])
-p=(2,0)
-b_vars=np.array([0.33,0.33])
-t=(0,6.3)
-n_steps=50
-sol=npc(func_wrapper, u0, p, t, b_vars)
-
-print(sol)
 

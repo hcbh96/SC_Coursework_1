@@ -8,8 +8,9 @@ def phase_cond(u, dudt, t):
     """
     Return the phase_cond of the equation (always 0)
     """
-    res = dudt(0, solve_ivp(dudt, t, u).y[:,-1])
-
+    res=dudt(0, solve_ivp(dudt, t, u).y[:,-1])
+    integral=dudt(0, solve_ivp(dudt, t, u).y[0])
+    print("Derivative at integral: {}".format(integral))
     return res
 
 def periodicity_cond(u, dudt, t, b_vars):
@@ -22,8 +23,8 @@ def periodicity_cond(u, dudt, t, b_vars):
     return res
 
 def g(u, dudt, t, b_vars):
-    return np.concatenate((periodicity_cond(u, dudt, t, b_vars), phase_cond(u, dudt, t)))
-
+    res = np.concatenate((periodicity_cond(u, dudt, t, b_vars), phase_cond(u, dudt, t)))
+    return res
 
 
 def shooting(u0, p, func_wrapper, t, b_vars):
@@ -41,6 +42,7 @@ def shooting(u0, p, func_wrapper, t, b_vars):
     Returns : an ndarray containing the corrected initial values for the limit cycle.
 """
     dudt = func_wrapper(p)
+    print("Variable p : {}".format(p))
     #TODO:_func_to_solve currently only being solved for either x(t)=bound_var or dxdt=bound var it needs to be solved for both [u0-ut, dudt]=0
     sol = root(g, u0, args=(dudt, t, b_vars), method='lm')
 
