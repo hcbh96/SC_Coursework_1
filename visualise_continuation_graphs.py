@@ -27,11 +27,11 @@ def hopf_bifurcation_modified(beta):
             ]
 
 
-u0=np.array([0,0])
-p=(0,2)
-b_vars=np.array([0,0])
+u0=np.array([1.00115261, 0.99997944])
+p=(2,0)
+b_vars=np.array([1,1])
 t=(0,6.3)
-n_steps=40
+n_steps=100
 sol=npc(hopf_bifurcation, u0, p, t, b_vars, n_steps)
 
 norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
@@ -39,6 +39,21 @@ plt.plot(sol["params"], norm)
 plt.xlabel("Param Value")
 plt.ylabel("Solution U Norm")
 plt.title("Continuous solution to Hopf Bifurcation")
+plt.savefig('Continuous solution to Hopf Bifurcation')
 
+#plt.show()
 
-plt.show()
+u0=np.array([1.00115261, 0.99997944])
+p=(2, -1)
+b_vars=np.array([1,1])
+t=(0,6.3)
+n_steps=100
+sol=npc(hopf_bifurcation_modified, u0, p, t, b_vars, n_steps)
+
+norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
+plt.plot(sol["params"], norm)
+plt.xlabel("Param Value")
+plt.ylabel("Solution U Norm")
+plt.title("Continuous solution to Modified Hopf Bifurcation")
+plt.savefig('Continuous solution to Modified Hopf Bifurcation')
+

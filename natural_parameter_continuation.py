@@ -59,7 +59,9 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
 
         #prep result to return
         if u is not None:
+            print("Updating U0: {} to u: {}".format(u0, u))
             u0=u # update initial guess
+            b_vars=u
             res["params"].append(par)
             res["solutions"].append(u)
 

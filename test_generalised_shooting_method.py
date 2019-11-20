@@ -123,6 +123,26 @@ def test_on_hopf_bif_nor_form_b_2():
     exp = solve_ivp(dudt, t, res).y[:,-1]
     assert np.allclose(b_vars, exp, atol=1e-02)
 
+def test_on_hopf_bif_nor_form_b_2():
+    beta=2
+    def dudt(t, X):
+        """Return a systems of equations relating to the hopf bifurcation"""
+        return np.array([
+             beta*X[0]-X[1]+X[0]*(X[0]**2+X[1]**2)-X[0]*(X[0]**2+X[1]**2)**2,
+             X[0]+beta*X[1]+X[1]*(X[0]**2+X[1]**2)-X[1]*(X[0]**2+X[1]**2)**2,
+             ])
+    #define an initial guess for the starting conditions
+    X0=[1,1]
+    #expected starting params at boundary
+    b_vars=[1.00099494, 0.99852453]
+    #time range
+    t=(0,6.3)
+
+    #calc the result using a secant method
+    res=shooting(X0, dudt, t, b_vars)
+    exp = solve_ivp(dudt, t, res).y[:,-1]
+    assert np.allclose(b_vars, exp, atol=1e-02)
+
 
 if __name__ == '__main__':
     unittest.main()
