@@ -1,4 +1,5 @@
-from scipy.optimize import fsolve
+import numpy as np
+from scipy.optimize import root
 from generalised_shooting_method import shooting
 """
 1. start with two solutions [[u0, t0, p0],[u1,t1,p1]]
@@ -6,25 +7,28 @@ from generalised_shooting_method import shooting
 3. predict next solution v3_hat=v2+delta_v1_v2
 4. solve [u3-uT, du0, delta_v1_v2(*dot*)(v2-v2_hat)]=0
 """
-def func_to_solve(v, dudt, t, b_vars, v_guess, delta_v):
+def func_to_solve(v, func_wrapper, t, b_vars, delta_v, v_guess):
     #TODO: Test params passed to this function
     #TODO: Decouple input functions and test input output
     # v=[u, p]
+
+    # func to guess to dudt
+    dudt=func_wrapper(v[1])
     return [
-        shooting(dudt, v, t, b_vars, solve_derivative=False),
-        shooting(dudt, v, t, b_vars, solve_derivative=True),
-        lambda v : np.dot((v-v_guess), delta_v),
+        shooting(v[0], dudt, t, b_vars),
+        lambda v : np.dot(delta_v, (v-v_guess)),
         ]
 
 #TODO: Ensure the function is properly documented
-def pseudo_archlength_continuation(dudt, v0, v1, t, step_size, p_range, b_vars):
+def pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, b_vars):
     """
-
     step_size : +ive if steps increasing, -ive if steps decreasing
     """
+    #prep_solution
+    solution = { "params": [], "solutions": [] }
 
     # set up loop and termination
-    while p >= p_range[0] and p <= p_range[1]
+    while v1[1] >= p_range[0] and v1[1] <= p_range[1] and v1[1] >= p_range[0] and v1[1] <= p_range[1]:
         # calc secant
         delta_v = v1 - v0
 
@@ -32,27 +36,40 @@ def pseudo_archlength_continuation(dudt, v0, v1, t, step_size, p_range, b_vars):
         v_guess = v1 + delta_v*step_size
 
         # solve for root #TODO decouple functions and unit test
-        v2=fsolve(func_to_solve, v_guess, args=(dudt, t, b_vars, v_guess, delta_v))
+        input("Enter to continue")
+        v2=root(func_to_solve, v_guess, args=(func_wrapper, t, b_vars, v_guess, delta_v)).x
+        print("V2 : {}".format(v2))
+
         #[shoot(periodicity), shoot(phase), np.dot((v2-v_guess), delta_v)=0]
 
-        # reassign and re-run
+        # reassign, re-run and prep solution
         v0=v1;v1=v2
+        solution["params"].append(v1[1])
+        solution["solutions"].append(v1[0])
 
 
 #NOTE could have an error handler incase user supplies v0 or v1 with p outside p_range
 
-def dudt(v):
+def func_wrapper(v):
     # update this to take [u,p]
-    return t, v : np.array([
+    return lambda t, X : np.array([
         v*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
         X[0]+v*X[1]-X[1]*(X[0]**2+X[1]**2),
         ])
 
-u0=[1,1]
-p0=2
-v0=[u0, p0]
-vary_par=dict(start=2, stop=-1, steps=50)
-b_vars=[1,1]
+u0=np.array([1,1])
+p0=0
+v0=np.array([u0, p0])
+u1=np.array([1.5,1.5])
+p1=0.1
+v1=np.array([u1,p1])
+
+p_range=[0,2]
+b_vars=np.array([1,1])
+
+step_size=0.1
+
 t=(0,6.35)
 
-pseudo_archlength_continuation()
+sol=pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, b_vars)
+print("Solution: {}".format(sol))

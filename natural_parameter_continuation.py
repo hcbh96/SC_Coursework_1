@@ -1,7 +1,10 @@
 from generalised_shooting_method import shooting
 from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
+import warnings
 import numpy as np
+import warnings
+warnings.filterwarnings("error")#warning were still causing our guess to update      causing solutions to jump therefor I have started catching runtime warnings
 
 #TODO add handler for local minima
 #TODO add collocation method
@@ -44,8 +47,7 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
     for par in steps:
         """By passing the function wrapper instead of the function I can update the function definition at run time allowing var_par to change with each iteration"""
         # prep function
-        dudt = func_wrapper(p)
-
+        dudt = func_wrapper(par)
         if not shooting:
             u, info, ier, msg = fsolve(dudt, u0, full_output=True)
             if ier == 1:

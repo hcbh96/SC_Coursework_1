@@ -27,9 +27,9 @@ def hopf_bifurcation_modified(beta):
             ]
 
 
-u0=np.array([0.33,0.33])
+u0=np.array([0,0])
 p=(0,2)
-b_vars=np.array([0.33,0.33])
+b_vars=np.array([0,0])
 t=(0,6.3)
 n_steps=40
 sol=npc(hopf_bifurcation, u0, p, t, b_vars, n_steps)

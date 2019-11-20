@@ -6,7 +6,7 @@ from scipy.optimize import fsolve
 from scipy.optimize import newton
 from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
-
+import math
 from generalised_shooting_method import shooting
 import numpy as np
 import pytest
@@ -18,7 +18,7 @@ def test_on_constant_derivative_find_root_with_odeint():
         return [1]
 
     #define an initial guess
-    X0=[1]
+    X0=[0]
 
     #expected starting params at boundaries
     boundary_vars=[1]
@@ -30,27 +30,6 @@ def test_on_constant_derivative_find_root_with_odeint():
     res=shooting(X0, dXdt, t, boundary_vars)
     exp = solve_ivp(dXdt, t, res).y[:,-1]
     assert np.isclose(boundary_vars, exp, atol=1e-03)
-
-
-def test_with_varying_derivative_to_find_stationary_point():
-    """This function is designed to test the generalised shooting method to an accuracy of 6 decimal places on a very simple system of ODEs"""
-    # rate of change set to constant
-    def dXdt(t, X):
-        return np.array([X[0],X[1]])
-
-    #define an initial guess
-    X0=np.array([0.5,0.5])
-
-    #expected starting params at boundaries
-    b_vars=np.array([1,1])
-
-    # define timespan
-    t=(0,1)
-
-    #calc the result using a secant method
-    res=shooting(X0, dXdt, t, b_vars)
-    exp = solve_ivp(dXdt, t, res).y[:,-1]
-    assert np.allclose(b_vars, exp, atol=1e-03)
 
 
 def test_on_lotka_volterra():
@@ -72,7 +51,7 @@ def test_on_lotka_volterra():
      X0=[0.51,0.5]
 
      #expected starting params at boundary
-     b_vars=[0.5, 0.5]
+     b_vars=[0.46543377, 0.3697647]
 
      #time range
      t=(0,20.76)
@@ -83,159 +62,66 @@ def test_on_lotka_volterra():
      assert np.allclose(b_vars, exp, atol=1e-02)
 
 
-def test_on_system_of_three():
-     """
-     This function is designed to ensure that the generalised shooting method works well when given a system of 3 first order ODEs
-
-     When Testing out generalised shooting method for a system of equations containing three first order ODEs I decided it was in the interest of the reader to use the most basic example possible, to allow the system to be envisaged by the reader and give them undoubtable confidence that the test is testing for the correct output
-
-     The specific point of this test is to ensure that my shooting method works on systems of first order linear ODEs of greater than 2 dimensions, this test focuses solely on doing that in the most simple way possible, i.e by having a system of three linearly independent first order ODE which all have solutions at 0.
-"""
-     def dXdt(t, X):
-         """Function to calculate the rate of change of the Hopf Bifurcation  at position X"""
-         return np.array([
-                 X[0],
-                 X[1],
-                 X[2]
-                 ])
-
-     # make an initial condition guess
-     X0=[1,0,0.5]
-
-     # set the boundary conditions
-     boundary_vars=[1,1,1]
-
-     # define a time range
-     t=np.linspace(0,10)
-
-     #find the solution of the generalised shooting method
-     res=shooting(X0, dXdt, t, boundary_vars)
-     expected = [0.82, 0.82, 0.82]
-     assert np.allclose(res, expected, atol=1e-02)
-
-
-def test_unmatched_input_dimensions():
-    #arrange
-    def dXdt(t, X):
-        return np.array([0,0])
-    X0=[0,0,0] # this variable has too many inputs
-    boundary_vars=[0,0]
-    t=np.linspace(0,10)
-    #act
-    throws = False
-    try:
-        res=shooting(dXdt, X0, t, boundary_vars)
-    except ValueError:
-        throws = True
-    #assert
-    assert throws, "Function should have thrown"
-
-
-def test_unmatched_input_dimensions_2():
-    #arrange
-    def dXdt(t, X):
-        return np.array([0,0])
-    X0=[0,0]
-    boundary_vars=[0,0,0] # this variable has too many inputs
-    t=np.linspace(0,10)
-    throws = False
-    #act
-    try:
-        res=shooting(dXdt, X0, t, boundary_vars)
-    except ValueError:
-        throws = True
-    #assert
-    assert throws, "Function should have throws"
-
-
-def test_shooting_method_with_no_convergence():
-    # rate of change and pred and prey populations
-    def dXdt(t, X):
-        """Return the change in pred and prey populations"""
-        return 0#this has no roots
+def test_on_hopf_bif_nor_form_b_1():
+    def dudt(t, X):
+        """Return a systems of equations relating to the hopf bifurcation"""
+        return np.array([
+                1*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+1*X[1]-X[1]*(X[0]**2+X[1]**2),
+               ])
 
     #define an initial guess for the starting conditions
-    X0=2
+    X0=[0.51,0.5]
 
     #expected starting params at boundary
-    boundary_vars=0
+    b_vars=[0.6978647 , 0.69902571]
 
     #time range
-    t=np.linspace(0,10)
+    t=(0,6.3)
+
     #calc the result using a secant method
-    throws = False
-    try:
-        res=shooting(dXdt, X0, t, boundary_vars, maxiter=1, integrator=odeint, root_finder=newton)
-    except RuntimeError:
-        throws = True
+    res=shooting(X0, dudt, t, b_vars)
+    exp = solve_ivp(dudt, t, res).y[:,-1]
+    assert np.allclose(b_vars, exp, atol=1e-02)
 
-    assert throws, "Function should have thrown"
+def test_on_hopf_bif_nor_form_b_0():
+    def dudt(t, X):
+        """Return a systems of equations relating to the hopf bifurcation"""
+        return np.array([
+                0*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+0*X[1]-X[1]*(X[0]**2+X[1]**2),
+               ])
+    #define an initial guess for the starting conditions
+    X0=[0,0]
+    #expected starting params at boundary
+    b_vars=[0, 0]
 
-def test_function_with_fsolve():
-    sigma=-1;beta=1
-    def dXdt(t, X):
-      """Function to calculate the rate of change of the Hopf Bifurcation     at position X"""
-      return np.array([X[0],X[1],X[2]])
+    #time range
+    t=(0,6.3)
 
-    # make an initial condition guess
-    X0=[1,0,0.5]
-
-    # set the boundary conditions
-    boundary_vars=[0,0,0]
-
-    # define a time range
-    t=np.linspace(0,10)
-
-    #find the solution of the generalised shooting method
-    res=shooting(dXdt, X0, t, boundary_vars, root_finder=fsolve)
-    expected = [0 , 0, 0 ]
-    assert np.allclose(res, expected, atol=1e-03), "'{0}' should be close to '{1}'".format(res, expected)
-
-
-def test_should_solve_ivp():
-     # rate of change set to conistant
-     def dXdt(t, X):
-         return [X[0],X[1]]
-
-     #define an initial guess
-     X0=[1,1]
-
-     #expected starting params at boundaries
-     boundary_vars=[1,1]
-
-     # define timespan
-     t=(1,10)
-
-     #calc the result using a secant method
-     res=shooting(dXdt, X0, t, boundary_vars, integrator=solve_ivp)
-
-     assert np.allclose(res, [0,0], atol=1e-03), "'{0}' should be close to [0,0]".format(res)
-
-
-def test_func_throws_with_non_defined_integrator():
-    # rate of change set to conistant
-    def dXdt(t, X):
-      return [1]
-    def random_integrator(X):
-      return X[0]*2+1
-
-    #define an initial guess
-    X0=[1]
-
-    #expected starting params at boundaries
-    boundary_vars=[1]
-
-    # define timespan
-    t=np.linspace(0,1)
-
-    throws=False
     #calc the result using a secant method
-    try:
-      res=shooting(dXdt, X0, t, boundary_vars,         integrator=random_integrator)
-    except AttributeError:
-      throws=True
+    res=shooting(X0, dudt, t, b_vars)
+    exp = solve_ivp(dudt, t, res).y[:,-1]
+    assert np.allclose(b_vars, exp, atol=1e-02)
 
-    assert throws, "Fucntion should have thrown"
+def test_on_hopf_bif_nor_form_b_2():
+    def dudt(t, X):
+        """Return a systems of equations relating to the hopf bifurcation"""
+        return np.array([
+                2*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+2*X[1]-X[1]*(X[0]**2+X[1]**2),
+               ])
+    #define an initial guess for the starting conditions
+    X0=[1.4,1.4]
+    #expected starting params at boundary
+    b_vars=[1.00115261, 0.99997944]
+    #time range
+    t=(0,6.3)
+
+    #calc the result using a secant method
+    res=shooting(X0, dudt, t, b_vars)
+    exp = solve_ivp(dudt, t, res).y[:,-1]
+    assert np.allclose(b_vars, exp, atol=1e-02)
 
 
 if __name__ == '__main__':

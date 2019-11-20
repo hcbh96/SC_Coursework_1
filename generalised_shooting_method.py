@@ -6,7 +6,7 @@ def phase_cond(u, dudt, t):
     """
     Return the phase_cond of the equation (always 0)
     """
-    res= np.array(dudt(0, solve_ivp(dudt, t, u).y[:,-1]))
+    res= np.array(dudt(0,u))
     return res
 
 def periodicity_cond(u, dudt, t, b_vars):
@@ -42,9 +42,7 @@ def shooting(u0, dudt, t, b_vars):
     ----------
     Returns : an ndarray containing the corrected initial values for the limit cycle.
     """
-
-    sol = newton(g, u0, args=(dudt, t, b_vars), method="lm")
-
+    sol = root(g, u0, args=(dudt, t, b_vars), method="lm")
     if sol["success"] == True:
          print("Root finder found the solution u={} after {} function calls".format(sol["x"], sol["nfev"]))
          return sol["x"]
