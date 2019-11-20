@@ -35,6 +35,7 @@ n_steps=100
 sol=npc(hopf_bifurcation, u0, p, t, b_vars, n_steps)
 
 norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
+fig1=plt.figure()
 plt.plot(sol["params"], norm)
 plt.xlabel("Param Value")
 plt.ylabel("Solution U Norm")
@@ -51,6 +52,7 @@ n_steps=100
 sol=npc(hopf_bifurcation_modified, u0, p, t, b_vars, n_steps)
 
 norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
+fig2=plt.figure()
 plt.plot(sol["params"], norm)
 plt.xlabel("Param Value")
 plt.ylabel("Solution U Norm")
