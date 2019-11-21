@@ -59,9 +59,7 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
         if not shooting:
             u, info, ier, msg = fsolve(dudt, u0, full_output=True)
             if ier == 1:
-                print("Root finder found the solution u={} after {} function
-                        calls; the norm of the final residual is {}".format(u,
-                            info["nfev"], np.linalg.norm(info["fvec"])))
+                print("Root finder found the solution u={} after {} function calls; the norm of the final residual is {}".format(u,info["nfev"], np.linalg.norm(info["fvec"])))
             else:
                 print("Root finder failed with error message: {}".format(msg))
         else:

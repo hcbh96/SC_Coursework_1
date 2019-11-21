@@ -25,15 +25,11 @@ def test_should_use_solve_method_via_fsolve():
 
     #assert
     exp=1/math.sqrt(3)# this is the value of the local minima
-    assert len(sol["params"]) == 60, "Should return 60 solutions actually
-    returns    '{0}'".format(len(sol["params"]))
-    assert len(sol["results"]) == 60, "Should return 60 solutions actually
-    returns   '{0}'".format(len(sol["results"]))
+    assert len(sol["params"]) == 60, "Should return 60 solutions actually returns    '{0}'".format(len(sol["params"]))
+    assert len(sol["results"]) == 60, "Should return 60 solutions actually returns   '{0}'".format(len(sol["results"]))
     for i in range(len(sol["params"])):# checks validity of solution before bif
         calc_result = func_wrapper(sol["params"][i])(sol["solutions"][i])
-        assert math.isclose(calc_result,0, abs_tol=1e-03), "The solution to the
-        function given the parameter '{0}' should be 0 but instead equals {1}"
-        .format(sol["params"][i], calc_result)
+        assert math.isclose(calc_result,0, abs_tol=1e-03), "The solution to the function given the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
 
 
 def test_run_npc_on_hopf_bifurcation_normal_form():
@@ -83,9 +79,7 @@ def test_return_solution_using_newton_and_solve_ivp():
     # assert
     for i in range(len(sol["params"])):
         calc_result = func_wrapper(sol["params"][i])(0, sol["solutions"][i])
-        assert math.isclose(np.linalg.norm(calc_result),0, abs_tol=1e-03),
-        "The solution to the function given    the parameter '{0}' should
-        be 0 but instead equals {1}".format(sol["params"][i], calc_result)
+        assert math.isclose(np.linalg.norm(calc_result),0, abs_tol=1e-03), "The solution to the function given    the parameter '{0}' should be 0 but instead equals {1}".format(sol["params"][i], calc_result)
 
 
 def test_return_solution_using_newton_and_odeint():
@@ -108,13 +102,9 @@ def test_return_solution_using_newton_and_odeint():
     sol=npc(func_wrapper, X0, vary_par, t, method='shooting',
             boundary_vars=b_vars, root_finder=newton, integrator=odeint)
     # assert
-    assert len(sol["params"]) == 8, "Should return 10 solutions actually
-    returns    '{0}'".format(len(sol["params"]))
+    assert len(sol["params"]) == 8, "Should return 10 solutions actually returns    '{0}'".format(len(sol["params"]))
     for i in range(len(sol["params"])):# checks validity of all solutions
         calc_result = odeint(func_wrapper(sol["params"][i]),
                 sol["solutions"][i], t)
-        assert np.allclose(calc_result, b_vars, atol=1e-01), "Integrating
-        the function given the param : '{0}', X0: '{1}' should return the
-        b_vars: '{2}' but instead returns : '{3}'".format(sol["params"][i],
-                sol["solutions"][i], b_vars, calc_result)
+        assert np.allclose(calc_result, b_vars, atol=1e-01), "Integrating the function given the param : '{0}', X0: '{1}' should return the b_vars: '{2}' but instead returns : '{3}'".format(sol["params"][i],sol["solutions"][i], b_vars, calc_result)
 
