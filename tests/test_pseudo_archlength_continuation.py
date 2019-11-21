@@ -9,8 +9,8 @@ def test_should_use_solve_method_via_fsolve():
     # arrange
     def func_wrapper(v) :
         return lambda x: x**3 -x + v
-    V0=[1, 10]
-    v1=[2,2,10]
+    V0=np.array([1,1, 10])
+    V1=np.array([2,2,10])
     p_range=(-2,2)
     step_size=0.1
 

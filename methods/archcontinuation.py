@@ -64,7 +64,7 @@ def pac(func_wrapper, v0, v1, p_range, step_size=0.1):
         delta_v = v1 - v0 # only take the postional variables into acc
 
         # using v1 and delta_v calc v2 guess
-        v_guess = v1 + delta_v
+        v_guess = v1 + delta_v*step_size
 
         # solve for root #TODO decouple functions and unit test
         v2=root(func_to_solve, v_guess,

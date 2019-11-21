@@ -3,7 +3,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
 import numpy as np
 
-def npc(func_wrapper, state_vec, p, n_steps=100, shooting=True):
+def npc(func_wrapper, state_vec, p, n_steps=100, shoot=True):
     """Function performs natural parameter continuation, i.e., it simply
     increments the a parameter by a set amount and attempts to find the
     solution for the new parameter value using the last found solution
@@ -53,7 +53,7 @@ def npc(func_wrapper, state_vec, p, n_steps=100, shooting=True):
 
         # prep function
         dudt = func_wrapper(par)
-        if not shooting:
+        if not shoot:
             u, info, ier, msg = fsolve(dudt, state_vec, full_output=True)
             if ier == 1:
                 print("Root finder found the solution u={} after {} function calls; the norm of the final residual is {}".format(u,info["nfev"], np.linalg.norm(info["fvec"])))

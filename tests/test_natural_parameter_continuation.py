@@ -5,7 +5,7 @@ from context import methods
 from methods.pcontinuation import npc
 
 
-def test_should_use_solve_method_via_fsolve():
+def test_should_solve_cubic():
     """This function seems to always find a root and then a local min"""
     # arrange
     def func_wrapper(v) :
@@ -15,7 +15,7 @@ def test_should_use_solve_method_via_fsolve():
 
 
     #act
-    sol=npc(func_wrapper, X0, p)
+    sol=npc(func_wrapper, X0, p, shoot=True)
 
 
     #assert
