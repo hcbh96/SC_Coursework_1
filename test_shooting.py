@@ -3,8 +3,7 @@ from scipy.optimize import newton
 from scipy.integrate import solve_ivp
 from scipy.integrate import odeint
 import math
-from context import methods
-from methods.shooting import shooting
+from shooting import shooting
 import numpy as np
 import pytest
 

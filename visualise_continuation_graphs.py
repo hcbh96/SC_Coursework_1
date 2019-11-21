@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from context import methods
-from methods.pcontinuation import npc
+from natural_parameter_continuation import npc
 def cubic_equation(b):
      """Algebraic Cubic Equations"""
      return lambda x : x**3 - x + b

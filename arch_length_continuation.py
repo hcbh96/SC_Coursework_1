@@ -1,6 +1,6 @@
 import numpy as np
 from scipy.optimize import root
-from .shooting import shooting
+from shooting import shooting
 def func_to_solve(v, func_wrapper, v_guess):
     #TODO: Test params passed to this function
     #TODO: Decouple input functions and test input output
