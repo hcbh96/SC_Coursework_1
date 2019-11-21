@@ -31,15 +31,19 @@ def pac(func_wrapper, v0, v1, p_range, step_size=0.1):
              This Input should be a function wrapper which returns a
              function defining dudt
 
-         state_vec : array-like
+         v0 : array-like
              guess of the solution to function in the form [u0,...uN,T,p], the
              T is the expected period and the p is the param value
+
+         v1 : array-like
+              guess of the solution to function in the form [u0,...uN,T,p], the
+              T is the expected period and the p is the param value
 
          p_range : tuple
              Interval of parameter variation (p0, pf). The solver will break
              after it exceeds one of the p_range bounds
 
-         n_steps=100 : int optional,
+         step_size=0.1 : int optional,
                  the number of equally spaced steps at which the iteration
                  should be run
 
