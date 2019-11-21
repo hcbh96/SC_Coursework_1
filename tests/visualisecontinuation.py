@@ -1,10 +1,7 @@
-"""
-This file will be used to plot and visualise the solutions to natural parameter continuation.
-"""
 import matplotlib.pyplot as plt
 import numpy as np
-from pcontinuation import npc
-
+from context import methods
+from methods.pcontinuation import npc
 def cubic_equation(b):
      """Algebraic Cubic Equations"""
      return lambda x : x**3 - x + b
