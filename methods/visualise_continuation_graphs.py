@@ -3,8 +3,7 @@ This file will be used to plot and visualise the solutions to natural parameter 
 """
 import matplotlib.pyplot as plt
 import numpy as np
-import methods
-from .pcontinuation import npc
+from pcontinuation import npc
 
 def cubic_equation(b):
      """Algebraic Cubic Equations"""
@@ -27,19 +26,19 @@ def hopf_bifurcation_modified(beta):
 
 
 u0=np.array([1.00115261, 0.99997944, 0.63])
-p=(2,0)
+p=(0,2)
 n_steps=10
 sol=npc(hopf_bifurcation, u0, p, n_steps)
 
-norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
+norm=list(map(lambda x : np.linalg.norm(x[0:-1]), sol["solutions"]))
 fig1=plt.figure()
 plt.plot(sol["params"], norm)
 plt.xlabel("Param Value")
 plt.ylabel("Solution U Norm")
 plt.title("Continuous solution to Hopf Bifurcation")
-plt.savefig('Continuous solution to Hopf Bifurcation')
+#plt.savefig('Continuous solution to Hopf Bifurcation')
 
-#plt.show()
+plt.show()
 
 u0=np.array([1.00115261, 0.99997944, 6.3])
 p=(2, -1)
@@ -47,11 +46,11 @@ t=(0,6.3)
 n_steps=100
 sol=npc(hopf_bifurcation_modified, u0, p, n_steps)
 
-norm=list(map(lambda x : np.linalg.norm(x), sol["solutions"]))
+norm=list(map(lambda x : np.linalg.norm(x[0:-1]), sol["solutions"]))
 fig2=plt.figure()
 plt.plot(sol["params"], norm)
 plt.xlabel("Param Value")
 plt.ylabel("Solution U Norm")
 plt.title("Continuous solution to Modified Hopf Bifurcation")
-plt.savefig('Continuous solution to Modified Hopf Bifurcation')
-
+#plt.savefig('Continuous solution to Modified Hopf Bifurcation')
+plt.show()

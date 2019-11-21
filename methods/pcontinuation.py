@@ -3,7 +3,7 @@ from scipy.integrate import solve_ivp
 from scipy.optimize import fsolve
 import numpy as np
 
-def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
+def npc(func_wrapper, state_vec, p, n_steps=100, shooting=True):
     """Function performs natural parameter continuation, i.e., it simply
     increments the a parameter by a set amount and attempts to find the
     solution for the new parameter value using the last found solution
@@ -18,16 +18,13 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
             This Input should be a function wrapper which returns a
             function defining dudt
 
-        u0 : array-like
-            guess of the solution to function at the starting param
+        state_vec : array-like
+            guess of the solution to function in the form [u0,...uN,T], the
+            T the final param is the expected period
 
         p : tuple
             Interval of parameter variation (p0, pf). The solver starts with
             p=p0 and re-calculates result until it reaches p=pf.
-
-        b_vars :  array-like
-            the boundary variable that specify the periodicity condition of the
-            equation
 
         n_steps=100 : int optional,
                 the number of equally spaced steps at which the iteration
@@ -57,19 +54,17 @@ def npc(func_wrapper, u0, p, t, b_vars, n_steps=100):
         # prep function
         dudt = func_wrapper(par)
         if not shooting:
-            u, info, ier, msg = fsolve(dudt, u0, full_output=True)
+            u, info, ier, msg = fsolve(dudt, state_vec, full_output=True)
             if ier == 1:
                 print("Root finder found the solution u={} after {} function calls; the norm of the final residual is {}".format(u,info["nfev"], np.linalg.norm(info["fvec"])))
             else:
                 print("Root finder failed with error message: {}".format(msg))
         else:
-            u=shooting(u0, dudt, t, b_vars)
+            u=shooting(state_vec, dudt)
 
         #prep result to return
         if u is not None:
-            print("Updating U0: {} to u: {}".format(u0, u))
-            u0=u # update initial guess
-            b_vars=u
+            state_vector=u
             res["params"].append(par)
             res["solutions"].append(u)
 

@@ -2,24 +2,26 @@ from scipy.optimize import root
 from scipy.integrate import solve_ivp
 import numpy as np
 
-def phase_cond(u, dudt, t):
+def phase_cond(u, dudt):
     res= np.array(dudt(0,u))
     return res
 
-def periodicity_cond(u, dudt, t, b_vars):
+def periodicity_cond(u, dudt, T):
     # integrate the ode for time t from starting position U
-    res = np.array(b_vars - solve_ivp(dudt, t, u).y[:,-1])
+    res = np.array(u - solve_ivp(dudt, (0, T), u).y[:,-1])
     return res
 
-def g(u, dudt, t, b_vars):
+def g(state_vec, dudt):
+    T = state_vec[-1]
+    u=state_vec[0:-1]
     res = np.concatenate((
-        periodicity_cond(u, dudt, t, b_vars),
-        phase_cond(u, dudt, t),
+        periodicity_cond(u, dudt, T),
+        phase_cond(u, dudt),
         ))
     return res
 
 
-def shooting(u0, dudt, t, b_vars):
+def shooting(state_vec, dudt):
     """
     A function that returns an estimation of the starting condition of a BVP
     subject to the first order differential equations
@@ -46,7 +48,7 @@ def shooting(u0, dudt, t, b_vars):
     NOTE: This function is currently having issues when used with npc however it
     is also currently passing all of its tests
     """
-    sol = root(g, u0, args=(dudt, t, b_vars), method="lm")
+    sol = root(g, state_vec, args=(dudt,), method="lm")
     if sol["success"] == True:
          print("Root finder found the solution u={} after {} function calls"
                  .format(sol["x"], sol["nfev"]))
