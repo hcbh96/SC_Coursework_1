@@ -1,7 +1,3 @@
-"""
-Test Generalised shooting method contains test aimed at ensuring the Generalised shooting method is up to scratch and working properly.
-"""
-
 from scipy.optimize import fsolve
 from scipy.optimize import newton
 from scipy.integrate import solve_ivp
@@ -33,9 +29,13 @@ def test_on_constant_derivative_find_root_with_odeint():
 
 
 def test_on_lotka_volterra():
-     """This function is intended to test the generalised shooting method on the Lotka Volterra method ensuring that the absolute tolerance of the solution is within 2 decimal places
+     """This function is intended to test the generalised shooting method
+     on the Lotka Volterra method ensuring that the absolute tolerance of
+     the solution is within 2 decimal places
 
-     params such [a,b,d] below should be defined outside the function as it means one can write loops with varying params during numerical analysis"""
+     params such [a,b,d] below should be defined outside the function as
+     it means one can write loops with varying params during numerical analysis
+     """
      #define params
      a=1; d=0.1; b=0.2
 
@@ -43,9 +43,9 @@ def test_on_lotka_volterra():
      def dXdt(t, X):
          """Return the change in pred and prey populations"""
          return np.array([
-             X[0]*(1-X[0])-((a*X[0]*X[1])/(d+X[0])),
-             b*X[1]*(1-(X[1]/X[0]))
-             ])
+            X[0]*(1-X[0])-((a*X[0]*X[1])/(d+X[0])),
+            b*X[1]*(1-(X[1]/X[0]))
+            ])
 
      #define an initial guess for the starting conditions
      X0=[0.51,0.5]

@@ -1,12 +1,7 @@
 import numpy as np
 from scipy.optimize import root
 from generalised_shooting_method import shooting
-"""
-1. start with two solutions [[u0, t0, p0],[u1,t1,p1]]
-2. write v=[u,t,p] extended state vector
-3. predict next solution v3_hat=v2+delta_v1_v2
-4. solve [u3-uT, du0, delta_v1_v2(*dot*)(v2-v2_hat)]=0
-"""
+
 def func_to_solve(v, func_wrapper, t, b_vars, delta_v, v_guess):
     #TODO: Test params passed to this function
     #TODO: Decouple input functions and test input output
@@ -20,7 +15,8 @@ def func_to_solve(v, func_wrapper, t, b_vars, delta_v, v_guess):
         ]
 
 #TODO: Ensure the function is properly documented
-def pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, b_vars):
+def pseudo_archlength_continuation(func_wrapper, v0, v1, t,
+        step_size, p_range, b_vars):
     """
     step_size : +ive if steps increasing, -ive if steps decreasing
     """
@@ -28,7 +24,11 @@ def pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, 
     solution = { "params": [], "solutions": [] }
 
     # set up loop and termination
-    while v1[1] >= p_range[0] and v1[1] <= p_range[1] and v1[1] >= p_range[0] and v1[1] <= p_range[1]:
+    while v1[1] >= p_range[0]
+    and v1[1] <= p_range[1]
+    and v1[1] >= p_range[0]
+    and v1[1] <= p_range[1]:
+
         # calc secant
         delta_v = v1 - v0
 
@@ -36,11 +36,10 @@ def pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, 
         v_guess = v1 + delta_v*step_size
 
         # solve for root #TODO decouple functions and unit test
-        input("Enter to continue")
-        v2=root(func_to_solve, v_guess, args=(func_wrapper, t, b_vars, v_guess, delta_v)).x
+        v2=root(func_to_solve, v_guess,
+                args=(func_wrapper, t, b_vars, v_guess, delta_v)).x
         print("V2 : {}".format(v2))
 
-        #[shoot(periodicity), shoot(phase), np.dot((v2-v_guess), delta_v)=0]
 
         # reassign, re-run and prep solution
         v0=v1;v1=v2
@@ -48,7 +47,6 @@ def pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, 
         solution["solutions"].append(v1[0])
 
 
-#NOTE could have an error handler incase user supplies v0 or v1 with p outside p_range
 
 def func_wrapper(v):
     # update this to take [u,p]
@@ -71,5 +69,6 @@ step_size=0.1
 
 t=(0,6.35)
 
-sol=pseudo_archlength_continuation(func_wrapper, v0, v1, t, step_size, p_range, b_vars)
+sol=pseudo_archlength_continuation(func_wrapper, v0, v1,
+        t, step_size, p_range, b_vars)
 print("Solution: {}".format(sol))
