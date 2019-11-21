@@ -7,8 +7,8 @@ from scipy.optimize import fsolve
 from scipy.optimize import newton
 from scipy.integrate import odeint
 from scipy.integrate import solve_ivp
-from natural_parameter_continuation import npc
-
+from context import methods
+from methods.pcontinuation import npc
 # TODO I need to write assertions here
 def test_should_use_solve_method_via_fsolve():
     """This function seems to always find a root and then a local min"""
