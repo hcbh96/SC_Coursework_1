@@ -19,6 +19,10 @@ def func_to_solve(v, func_wrapper, v_guess, delta_v, shoot):
         s_r = shooting(v[0:-1], dudt)
         print("s_r {}".format(s_r))
         print("lamda {}".format(lam(v)))
+
+    if not len(s_r) > 0:
+        print("Root finder failed for v value {}".format(v))
+        raise RuntimeError()
     res = np.concatenate([s_r,lam(v)])
     print("Result {}".format(res))
     return res
