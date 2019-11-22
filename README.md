@@ -44,13 +44,6 @@ py.test
 ```
 Unfortunately the tests are currently broken as the code is not producing the intended output
 
-### Break down into end to end tests
-
-Explain what these tests test and why
-
-```
-Give an example
-```
 
 ## Authors
 
