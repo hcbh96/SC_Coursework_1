@@ -1,7 +1,8 @@
 import numpy as np
 from scipy.optimize import root
+from scipy.optimize import fsolve
 from shooting import shooting
-def func_to_solve(v, func_wrapper, v_guess):
+def func_to_solve(v, func_wrapper, v_guess, shoot):
     #TODO: Test params passed to this function
     #TODO: Decouple input functions and test input output
     # v=[u, p]
@@ -9,20 +10,27 @@ def func_to_solve(v, func_wrapper, v_guess):
     # func to guess to dudt
     dudt=func_wrapper(v[-1])
     print("Fitting with param {}".format(v[-1]))
-    return [
-        shooting(v[0:-1], dudt),
-        lambda v : np.dot(delta_v, (v-v_guess)),
-        ]
+
+    if not shoot:
+        res = [
+                fsolve(dudt, v[0:-1]),
+                lambda v : np.dot(delta_v, (v-v_guess)),
+              ]
+    else:
+        res = [
+                shooting(v[0:-1], dudt, shoot),
+                lambda v : np.dot(delta_v, (v-v_guess)),
+               ]
 
 #TODO: Ensure the function is properly documented
-def pac(func_wrapper, v0, v1, p_range, step_size=0.1):
+def pac(func_wrapper, v0, v1, p_range, step_size=0.1, shoot=True):
     """
     Function performs natural pseudo archlength continuation, The method is
     based on the observation that the "idealparametrisation of a curve is
     arch- length. Pseudo-arch-length is an approximation of the arch-length
     in the tangent space of the curve.
 
-         USAGE: npc(func_wrapper, u0, p, t, b_vars, n_steps)
+         USAGE: pac(func_wrapper, v0, v1, p_range, step_size)
 
 
          INPUTS:
@@ -68,7 +76,7 @@ def pac(func_wrapper, v0, v1, p_range, step_size=0.1):
 
         # solve for root #TODO decouple functions and unit test
         v2=root(func_to_solve, v_guess,
-                args=(func_wrapper, v_guess), method='lm').x
+                args=(func_wrapper, v_guess, shoot), method='lm').x
         print("V2 : {}".format(v2))
 
 

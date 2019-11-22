@@ -9,7 +9,7 @@ def npc(func_wrapper, state_vec, p, n_steps=100, shoot=True):
     solution for the new parameter value using the last found solution
     as an initial guess.
 
-        USAGE: npc(func_wrapper, u0, p, t, b_vars, n_steps)
+        USAGE: npc(func_wrapper, state_vec, p, n_steps)
 
 
         INPUTS:
@@ -51,7 +51,7 @@ def npc(func_wrapper, state_vec, p, n_steps=100, shoot=True):
         the function definition at run time allowing var_par to change with
         each iteration
         """
-
+        print("Running on parameter value {}".format(par))
         # prep function
         dudt = func_wrapper(par)
         if not shoot:
