@@ -37,11 +37,12 @@ def test_on_lotka_volterra():
 
 
 def test_on_hopf_bif_nor_form_b_1():
+    beta=1
     def dudt(t, X):
         """Return a systems of equations relating to the hopf bifurcation"""
         return np.array([
-                1*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+1*X[1]-X[1]*(X[0]**2+X[1]**2),
+                beta*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+beta*X[1]-X[1]*(X[0]**2+X[1]**2),
                ])
 
     #define an initial guess for the starting conditions
@@ -55,11 +56,12 @@ def test_on_hopf_bif_nor_form_b_1():
     assert np.allclose(exp, u, atol=1e-02)
 
 def test_on_hopf_bif_nor_form_b_0():
+    beta=0
     def dudt(t, X):
         """Return a systems of equations relating to the hopf bifurcation"""
         return np.array([
-                0*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+0*X[1]-X[1]*(X[0]**2+X[1]**2),
+                beta*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+beta*X[1]-X[1]*(X[0]**2+X[1]**2),
                ])
     #define an initial guess for the starting conditions
     X0=[0,0,6.3]
@@ -71,11 +73,12 @@ def test_on_hopf_bif_nor_form_b_0():
     assert np.allclose(exp, u, atol=1e-02)
 
 def test_on_hopf_bif_nor_form_b_2():
+    beta=2
     def dudt(t, X):
         """Return a systems of equations relating to the hopf bifurcation"""
         return np.array([
-                2*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
-                X[0]+2*X[1]-X[1]*(X[0]**2+X[1]**2),
+                beta*X[0]-X[1]-X[0]*(X[0]**2+X[1]**2),
+                X[0]+beta*X[1]-X[1]*(X[0]**2+X[1]**2),
                ])
     #define an initial guess for the starting conditions
     X0=[1.4,1.4,6.3]
@@ -87,7 +90,7 @@ def test_on_hopf_bif_nor_form_b_2():
     assert np.allclose(exp, u, atol=1e-02)
 
 
-def test_on_hopf_bif_nor_form_b_2():
+def test_on_modified_hopf_bif_nor_form_b_2():
     beta=2
     def dudt(t, X):
         """Return a systems of equations relating to the hopf bifurcation"""

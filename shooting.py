@@ -26,21 +26,17 @@ def shooting(state_vec, dudt):
     A function that returns an estimation of the starting condition of a BVP
     subject to the first order differential equations
 
-    USAGE:
+    USAGE: shooting(state_vec, dudt)
 
     INPUTS:
 
-        u0 : ndarray
-            the expected starting conditions of the equation
+        state_vec : ndarray
+            the state_vector to solve, [u0...uN,T] the final argument should be
+            the expected period of the limit cycle or the period of the limit
+            cycle.
 
         dudt : ndarray
             containing the first order differtial equations to be solved
-
-        t : 2-tuple of float.
-            Interval of integration (t0, tf). The solver starts with t=t0 and
-            integrates until it reaches t=tf.
-
-        boundary_vars : The periodicity conditions that need to be satisfied
 
     ----------
     OUTPUT : an ndarray containing the corrected initial values for the limit cycle.
