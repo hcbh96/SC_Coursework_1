@@ -9,7 +9,7 @@ def test_solve_cubic():
     def func_wrapper(v) :
         return lambda x: x**3 -x + v
     V0=np.array([1,1])
-    V1=np.array([2,2])
+    V1=np.array([0.98,1.1])
     p_range=(-2,2)
     step_size=0.1
 
@@ -18,7 +18,7 @@ def test_solve_cubic():
 
 
     #assert
-    assert len(sol["params"]) == 10
+    assert len(sol["params"]) == 5
 
 
 def test_run_puc_on_hopf_bifurcation_normal_form():
@@ -35,7 +35,7 @@ def test_run_puc_on_hopf_bifurcation_normal_form():
     V0=np.array([1.4, 1.4, 6.2822916, 2])
     V1=np.array([1.3, 1.3, 6.2822916, 1.9])
     p_range=(0,2)
-    step_size=-0.1
+    step_size=-1
     #act
     sol=pac(hopf_bifurcation_norm, V0, V1, p_range, step_size)
     #assert
