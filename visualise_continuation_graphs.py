@@ -23,9 +23,8 @@ def hopf_bifurcation_modified(beta):
 
 u0=np.array([1.00115261, 0.99997944, 0.63])
 p=(0,2)
-n_steps=10
+n_steps=50
 sol=npc(hopf_bifurcation, u0, p, n_steps)
-
 norm=list(map(lambda x : np.linalg.norm(x[0:-1]), sol["solutions"]))
 fig1=plt.figure()
 plt.plot(sol["params"], norm)
@@ -39,7 +38,7 @@ plt.show()
 u0=np.array([1.00115261, 0.99997944, 6.3])
 p=(2, -1)
 t=(0,6.3)
-n_steps=100
+n_steps=50
 sol=npc(hopf_bifurcation_modified, u0, p, n_steps)
 
 norm=list(map(lambda x : np.linalg.norm(x[0:-1]), sol["solutions"]))

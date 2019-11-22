@@ -20,7 +20,8 @@ def npc(func_wrapper, state_vec, p, n_steps=100, shoot=True):
 
         state_vec : array-like
             guess of the solution to function in the form [u0,...uN,T], the
-            T the final param is the expected period
+            T the final param is the expected period and is a necessary
+            argument if shoot == True (default)
 
         p : tuple
             Interval of parameter variation (p0, pf). The solver starts with
@@ -56,8 +57,9 @@ def npc(func_wrapper, state_vec, p, n_steps=100, shoot=True):
         if not shoot:
             u, info, ier, msg = fsolve(dudt, state_vec, full_output=True)
             if ier == 1:
-                print("Root finder found the solution u={} after {} function calls; the norm of the final residual is {}".format(u,info["nfev"], np.linalg.norm(info["fvec"])))
+                print("Root finder found the solution u={} after {} function calls, with paramater {}; the norm of the final residual is {}".format(u,info["nfev"], par, np.linalg.norm(info["fvec"])))
             else:
+                u=None
                 print("Root finder failed with error message: {}".format(msg))
         else:
             u=shooting(state_vec, dudt)

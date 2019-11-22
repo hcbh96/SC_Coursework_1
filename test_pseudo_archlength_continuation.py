@@ -3,7 +3,7 @@ from arch_length_continuation import pac
 import numpy as np
 from scipy.integrate import solve_ivp
 
-def test_should_use_solve_method_via_fsolve():
+def test_solve_cubic():
     """This function seems to always find a root and then a local min"""
     # arrange
     def func_wrapper(v) :
@@ -27,7 +27,7 @@ def test_should_use_solve_method_via_fsolve():
         assert np.allclose(exp,u, atol=1e-03)
 
 
-def test_run_npc_on_hopf_bifurcation_normal_form():
+def test_run_puc_on_hopf_bifurcation_normal_form():
     """Returns two roots to the equation using the newton method"""
     # arrange
     def hopf_bifurcation_norm(beta):
